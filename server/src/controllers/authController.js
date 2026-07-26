@@ -13,9 +13,11 @@ const generateToken = (res, userId) => {
   res.cookie('jwt', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
+
+  return token;
 };
 
 // @desc    Auth user & get token
@@ -61,9 +63,10 @@ export const login = async (req, res) => {
       // We just log them in
     }
 
-    generateToken(res, user._id);
+    const token = generateToken(res, user._id);
 
     res.status(200).json({
+      token,
       _id: user._id,
       name: user.name,
       email: user.email,

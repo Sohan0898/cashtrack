@@ -18,6 +18,7 @@ const useAuthStore = create((set) => ({
   checkAuth: async () => {
     try {
       set({ isLoading: true });
+      const token = localStorage.getItem('cashtrack_token');
       const res = await api.get('/auth/profile');
       set({ user: res.data, isAuthenticated: true, theme: res.data.theme || 'light' });
       localStorage.setItem('cashtrack_theme', res.data.theme || 'light');
@@ -35,6 +36,9 @@ const useAuthStore = create((set) => ({
   login: async (idToken) => {
     try {
       const res = await api.post('/auth/login', { idToken });
+      if (res.data && res.data.token) {
+        localStorage.setItem('cashtrack_token', res.data.token);
+      }
       set({ user: res.data, isAuthenticated: true, theme: res.data.theme || 'light' });
       localStorage.setItem('cashtrack_theme', res.data.theme || 'light');
       if (res.data.language) {
@@ -51,9 +55,11 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       await api.post('/auth/logout');
-      set({ user: null, isAuthenticated: false });
     } catch (error) {
       console.error(error);
+    } finally {
+      localStorage.removeItem('cashtrack_token');
+      set({ user: null, isAuthenticated: false });
     }
   }
 }));

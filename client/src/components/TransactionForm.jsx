@@ -93,12 +93,13 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
     onError: () => toast.error('Failed to delete category')
   });
 
-  const categories = dbCategories
-    .filter(c => c.type === 'both' || c.type === type)
+  const safeDbCategories = Array.isArray(dbCategories) ? dbCategories : [];
+  const categories = safeDbCategories
+    .filter(c => c && (c.type === 'both' || c.type === type))
     .map(c => c.name);
   const selectedCategory = watch('category');
   
-  const modalCategories = dbCategories.filter(c => c.type === 'both' || c.type === type);
+  const modalCategories = safeDbCategories.filter(c => c && (c.type === 'both' || c.type === type));
 
   return (
     <>
