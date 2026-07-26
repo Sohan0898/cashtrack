@@ -30,7 +30,13 @@ const Dashboard = () => {
   const previousMonthName = prevDate.toLocaleString('default', { month: 'long' });
 
   const cards = [
-    { title: t('Total Available Balance') || 'Total Available Balance', value: formatCurrency(stats?.totalBalance || 0, user?.currency), icon: DollarSign, colorClass: 'bg-primary/20 text-primary' },
+    { 
+      title: t('Total Available Balance') || 'Total Available Balance', 
+      value: formatCurrency(stats?.totalBalance || 0, user?.currency), 
+      icon: DollarSign, 
+      colorClass: 'bg-emerald-500/20 text-emerald-400',
+      cardBgClass: 'bg-gradient-to-br from-emerald-950/80 via-emerald-900/70 to-emerald-950/90 border-emerald-500/40 text-emerald-100 shadow-xl shadow-emerald-950/40'
+    },
     { title: t('Previous Month Balance') || `Remain ${previousMonthName} Balance`, value: formatCurrency(stats?.previousMonthBalance || 0, user?.currency), icon: CalendarDays, colorClass: 'bg-secondary/20 text-secondary' },
     { title: t('Current Month Balance') || 'Current my balance', value: formatCurrency(stats?.currentMonthBalance || 0, user?.currency), icon: Wallet, colorClass: 'bg-info/20 text-info' },
     { title: `${t('Income')} (${currentMonthName})`, value: formatCurrency(stats?.currentMonthIncome || 0, user?.currency), icon: ArrowDownToLine, colorClass: 'bg-success/20 text-success' },
