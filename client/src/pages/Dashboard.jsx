@@ -37,8 +37,20 @@ const Dashboard = () => {
       colorClass: 'bg-emerald-500/20 text-emerald-400',
       cardBgClass: 'bg-gradient-to-br from-emerald-950/80 via-emerald-900/70 to-emerald-950/90 border-emerald-500/40 text-emerald-100 shadow-xl shadow-emerald-950/40'
     },
-    { title: t('Previous Month Balance') || `Remain ${previousMonthName} Balance`, value: formatCurrency(stats?.previousMonthBalance || 0, user?.currency), icon: CalendarDays, colorClass: 'bg-secondary/20 text-secondary' },
-    { title: t('Current Month Balance') || 'Current my balance', value: formatCurrency(stats?.currentMonthBalance || 0, user?.currency), icon: Wallet, colorClass: 'bg-info/20 text-info' },
+    { 
+      title: t('Current Month Balance') || 'Current my balance', 
+      value: formatCurrency(stats?.currentMonthBalance || 0, user?.currency), 
+      icon: Wallet, 
+      colorClass: 'bg-rose-500/20 text-rose-400',
+      cardBgClass: 'bg-gradient-to-br from-rose-950/80 via-red-950/70 to-rose-950/90 border-rose-500/40 text-rose-100 shadow-xl shadow-rose-950/40'
+    },
+    { 
+      title: t('Previous Month Balance') || `Remain ${previousMonthName} Balance`, 
+      value: formatCurrency(stats?.previousMonthBalance || 0, user?.currency), 
+      icon: CalendarDays, 
+      colorClass: 'bg-blue-500/20 text-blue-400',
+      cardBgClass: 'bg-gradient-to-br from-slate-950/80 via-blue-950/70 to-indigo-950/90 border-blue-500/40 text-blue-100 shadow-xl shadow-blue-950/40'
+    },
     { title: `${t('Income')} (${currentMonthName})`, value: formatCurrency(stats?.currentMonthIncome || 0, user?.currency), icon: ArrowDownToLine, colorClass: 'bg-success/20 text-success' },
     { title: `${t('Expenses')} (${currentMonthName})`, value: formatCurrency(stats?.currentMonthExpense || 0, user?.currency), icon: ArrowUpFromLine, colorClass: 'bg-error/20 text-error' },
     { title: t('Total Savings') || 'Total Savings', value: formatCurrency(stats?.totalSavings || 0, user?.currency), icon: PiggyBank, colorClass: 'bg-accent/20 text-accent' },

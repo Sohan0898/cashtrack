@@ -9,8 +9,8 @@ const StatCard = ({ title, value, icon: Icon, colorClass, cardBgClass, trend, de
       className={`glass-card p-6 flex items-start justify-between ${cardBgClass || ''}`}
     >
       <div>
-        <p className={`text-sm font-medium mb-1 ${cardBgClass ? 'text-emerald-200/80' : 'text-base-content/60'}`}>{title}</p>
-        <h3 className={`text-2xl md:text-3xl font-bold ${cardBgClass ? 'text-emerald-50 dark:text-emerald-100' : ''}`}>{value}</h3>
+        <p className={`text-sm font-medium mb-1 ${cardBgClass ? 'opacity-80' : 'text-base-content/60'}`}>{title}</p>
+        <h3 className="text-2xl md:text-3xl font-bold">{value}</h3>
         {trend && (
           <div className="mt-2 text-xs font-medium">
             <span className={trend.isPositive ? 'text-success' : 'text-error'}>
