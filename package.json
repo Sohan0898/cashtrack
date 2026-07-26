@@ -1,4 +1,14 @@
 {
+  "name": "cashtrack",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm --prefix client install && npm --prefix server install",
+    "build:client": "npm --prefix client run build",
+    "dev:client": "npm --prefix client run dev",
+    "dev:server": "npm --prefix server run dev",
+    "start:server": "npm --prefix server start"
+  },
   "dependencies": {
     "mongodb": "^7.5.0"
   }
