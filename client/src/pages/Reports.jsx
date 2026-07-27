@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore';
 import { formatCurrency } from '../lib/currency';
 import api from '../lib/axios';
-import { PieChart as PieChartIcon, TrendingUp, TrendingDown, CalendarDays, Calendar } from 'lucide-react';
+import { PieChart as PieChartIcon, TrendingUp, TrendingDown, CalendarDays, Calendar, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 import toast from 'react-hot-toast';
@@ -72,11 +72,11 @@ const Reports = () => {
       ) : (
         <div className="space-y-6">
           {data?.totals && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 flex flex-col justify-between">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/20 text-primary rounded-lg">
+                    <div className="p-2 bg-yellow-600/20 text-yellow-600 rounded-lg">
                       <CalendarDays className="w-5 h-5" />
                     </div>
                     <h3 className="text-xl font-bold">Monthly Overview</h3>
@@ -110,7 +110,7 @@ const Reports = () => {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-6 flex flex-col justify-between">
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-secondary/20 text-secondary rounded-lg">
+                    <div className="p-2 bg-purple-600/20 text-purple-600 rounded-lg">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <h3 className="text-xl font-bold">Yearly Overview</h3>
@@ -136,6 +136,33 @@ const Reports = () => {
                     <span className="text-xl font-bold text-error flex items-center gap-2">
                       <TrendingDown className="w-4 h-4" />
                       {formatCurrency(data.totals.yearlyExpense, user?.currency)}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-6 flex flex-col justify-between">
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-600/20 text-blue-600 rounded-lg">
+                      <Globe className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-bold">Lifetime Overview</h3>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center pb-4 border-b border-base-content/10">
+                    <span className="text-base-content/70 font-medium">Income</span>
+                    <span className="text-xl font-bold text-success flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4" />
+                      {formatCurrency(data.totals.lifetimeIncome, user?.currency)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base-content/70 font-medium">Expense</span>
+                    <span className="text-xl font-bold text-error flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4" />
+                      {formatCurrency(data.totals.lifetimeExpense, user?.currency)}
                     </span>
                   </div>
                 </div>

@@ -145,6 +145,14 @@ export const getReportsData = async (req, res) => {
       { $match: { user: userId, date: { $gte: startOfTargetYear, $lte: endOfTargetYear } } },
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
+    const [lifetimeIncomeAgg] = await Income.aggregate([
+      { $match: { user: userId } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const [lifetimeExpenseAgg] = await Expense.aggregate([
+      { $match: { user: userId } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
 
     res.json({ 
       incomes, 
@@ -155,7 +163,9 @@ export const getReportsData = async (req, res) => {
         monthlyIncome: monthIncomeAgg?.total || 0,
         monthlyExpense: monthExpenseAgg?.total || 0,
         yearlyIncome: yearIncomeAgg?.total || 0,
-        yearlyExpense: yearExpenseAgg?.total || 0
+        yearlyExpense: yearExpenseAgg?.total || 0,
+        lifetimeIncome: lifetimeIncomeAgg?.total || 0,
+        lifetimeExpense: lifetimeExpenseAgg?.total || 0
       }
     });
   } catch (error) {
