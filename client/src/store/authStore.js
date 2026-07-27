@@ -21,7 +21,7 @@ const useAuthStore = create((set) => ({
       const token = localStorage.getItem('cashtrack_token');
       const res = await api.get('/auth/profile');
       
-      const newTheme = res.data.theme || localStorage.getItem('cashtrack_theme') || 'dark';
+      const newTheme = localStorage.getItem('cashtrack_theme') || 'dark';
       set({ user: res.data, isAuthenticated: true, theme: newTheme });
       localStorage.setItem('cashtrack_theme', newTheme);
       
@@ -43,7 +43,7 @@ const useAuthStore = create((set) => ({
         localStorage.setItem('cashtrack_token', res.data.token);
       }
       
-      const newTheme = res.data.theme || localStorage.getItem('cashtrack_theme') || 'dark';
+      const newTheme = localStorage.getItem('cashtrack_theme') || 'dark';
       set({ user: res.data, isAuthenticated: true, theme: newTheme });
       localStorage.setItem('cashtrack_theme', newTheme);
       
