@@ -6,7 +6,7 @@ const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  theme: localStorage.getItem('cashtrack_theme') || 'light',
+  theme: localStorage.getItem('cashtrack_theme') || 'dark',
 
   setTheme: (theme) => {
     localStorage.setItem('cashtrack_theme', theme);
@@ -20,8 +20,11 @@ const useAuthStore = create((set) => ({
       set({ isLoading: true });
       const token = localStorage.getItem('cashtrack_token');
       const res = await api.get('/auth/profile');
-      set({ user: res.data, isAuthenticated: true, theme: res.data.theme || 'light' });
-      localStorage.setItem('cashtrack_theme', res.data.theme || 'light');
+      
+      const newTheme = res.data.theme || localStorage.getItem('cashtrack_theme') || 'dark';
+      set({ user: res.data, isAuthenticated: true, theme: newTheme });
+      localStorage.setItem('cashtrack_theme', newTheme);
+      
       if (res.data.language) {
         localStorage.setItem('cashtrack_language', res.data.language);
         i18n.changeLanguage(res.data.language);
@@ -39,8 +42,11 @@ const useAuthStore = create((set) => ({
       if (res.data && res.data.token) {
         localStorage.setItem('cashtrack_token', res.data.token);
       }
-      set({ user: res.data, isAuthenticated: true, theme: res.data.theme || 'light' });
-      localStorage.setItem('cashtrack_theme', res.data.theme || 'light');
+      
+      const newTheme = res.data.theme || localStorage.getItem('cashtrack_theme') || 'dark';
+      set({ user: res.data, isAuthenticated: true, theme: newTheme });
+      localStorage.setItem('cashtrack_theme', newTheme);
+      
       if (res.data.language) {
         localStorage.setItem('cashtrack_language', res.data.language);
         i18n.changeLanguage(res.data.language);

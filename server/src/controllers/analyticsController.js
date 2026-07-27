@@ -16,9 +16,9 @@ export const getDashboardStats = async (req, res) => {
     const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const incomes = await Income.find({ user: userId });
-    const expenses = await Expense.find({ user: userId });
-    const savingsAccounts = await Savings.find({ user: userId });
+    const incomes = await Income.find({ user: userId }).lean();
+    const expenses = await Expense.find({ user: userId }).lean();
+    const savingsAccounts = await Savings.find({ user: userId }).lean();
 
     let totalIncome = 0;
     let totalExpense = 0;
@@ -50,8 +50,8 @@ export const getDashboardStats = async (req, res) => {
     const prevMonthBalance = prevMonthIncome - prevMonthExpense;
 
     // Recent transactions (combine income & expense, sort by date desc, take top 5)
-    const recentIncomes = incomes.map(i => ({ ...i._doc, type: 'income' }));
-    const recentExpenses = expenses.map(e => ({ ...e._doc, type: 'expense' }));
+    const recentIncomes = incomes.map(i => ({ ...i, type: 'income' }));
+    const recentExpenses = expenses.map(e => ({ ...e, type: 'expense' }));
     const allTransactions = [...recentIncomes, ...recentExpenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
     // Chart Data (Last 30 days cash flow)

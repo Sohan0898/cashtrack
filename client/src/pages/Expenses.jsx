@@ -79,7 +79,7 @@ const Expenses = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {expenses.map(exp => (
+                  {(expenses || []).map(exp => (
                     <tr key={exp._id} className="whitespace-nowrap">
                       <td>{new Date(exp.date).toLocaleDateString()}</td>
                       <td className="font-medium">{exp.title}</td>

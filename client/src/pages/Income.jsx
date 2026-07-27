@@ -79,7 +79,7 @@ const Income = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {incomes.map(inc => (
+                  {(incomes || []).map(inc => (
                     <tr key={inc._id} className="whitespace-nowrap">
                       <td>{new Date(inc.date).toLocaleDateString()}</td>
                       <td className="font-medium">{inc.title}</td>

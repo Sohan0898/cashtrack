@@ -4,7 +4,7 @@ import useAuthStore from '../store/authStore';
 import { formatCurrency } from '../lib/currency';
 import api from '../lib/axios';
 import StatCard from '../components/StatCard';
-import { DollarSign, ArrowDownToLine, ArrowUpFromLine, PiggyBank, CalendarDays } from 'lucide-react';
+import { DollarSign, ArrowDownToLine, ArrowUpFromLine, PiggyBank, CalendarDays, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
@@ -134,6 +134,5 @@ const Dashboard = () => {
   );
 };
 
-// We need to import Wallet for the dashboard since we used it.
-import { Wallet } from 'lucide-react';
+
 export default Dashboard;
