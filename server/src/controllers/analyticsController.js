@@ -1,6 +1,7 @@
 import Income from '../models/Income.js';
 import Expense from '../models/Expense.js';
 import Savings from '../models/Savings.js';
+import SavingsHistory from '../models/SavingsHistory.js';
 
 // @desc    Get dashboard statistics
 // @route   GET /api/analytics/dashboard
@@ -125,6 +126,8 @@ export const getReportsData = async (req, res) => {
 
     const incomes = await Income.find({ user: userId, ...dateFilter });
     const expenses = await Expense.find({ user: userId, ...dateFilter });
+    const savingsAccounts = await Savings.find({ user: userId });
+    const savingsHistories = await SavingsHistory.find({ user: userId, ...dateFilter });
 
     const [monthIncomeAgg] = await Income.aggregate([
       { $match: { user: userId, date: { $gte: startOfTargetMonth, $lte: endOfTargetMonth } } },
@@ -146,6 +149,8 @@ export const getReportsData = async (req, res) => {
     res.json({ 
       incomes, 
       expenses,
+      savingsAccounts,
+      savingsHistories,
       totals: {
         monthlyIncome: monthIncomeAgg?.total || 0,
         monthlyExpense: monthExpenseAgg?.total || 0,

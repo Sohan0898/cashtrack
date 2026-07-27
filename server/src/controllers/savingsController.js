@@ -60,7 +60,7 @@ export const deleteSavings = async (req, res) => {
 // @access  Private
 export const addSavingsTransaction = async (req, res) => {
   try {
-    const { type, amount } = req.body; // type = 'Deposit' or 'Withdraw'
+    const { type, amount, date } = req.body; // type = 'Deposit' or 'Withdraw'
     const savingsId = req.params.id;
 
     const savings = await Savings.findById(savingsId);
@@ -85,6 +85,7 @@ export const addSavingsTransaction = async (req, res) => {
         savingsAccount: savings._id,
         type,
         amount: transAmount,
+        date: date || Date.now(),
       });
 
       await history.save();

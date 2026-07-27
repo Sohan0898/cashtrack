@@ -158,6 +158,43 @@ export default function RestoreBackup() {
         }
       }
 
+      if (data.savingsAccounts && Array.isArray(data.savingsAccounts)) {
+        for (const account of data.savingsAccounts) {
+          try {
+            const histories = data.savingsHistories?.filter(h => h.savingsAccount === account._id) || [];
+            let historyNet = 0;
+            histories.forEach(h => {
+              if (h.type === 'Deposit') historyNet += Number(h.amount) || 0;
+              if (h.type === 'Withdraw') historyNet -= Number(h.amount) || 0;
+            });
+            const initialBalance = account.balance - historyNet;
+
+            const res = await api.post('/savings', {
+              accountName: account.accountName || 'Restored Savings',
+              balance: initialBalance > 0 ? initialBalance : 0,
+              goal: account.goal,
+              type: account.type || 'Bank'
+            });
+            importedCount++;
+            
+            for (const history of histories) {
+              try {
+                await api.post(`/savings/${res.data._id}/transaction`, {
+                  type: history.type,
+                  amount: Number(history.amount) || 0,
+                  date: history.date
+                });
+                importedCount++;
+              } catch (err) {
+                console.error('Failed to restore savings history:', err);
+              }
+            }
+          } catch (err) {
+            console.error('Failed to restore savings account:', err);
+          }
+        }
+      }
+
       if (importedCount > 0) {
         toast.success(`Restored ${importedCount} records from Google Cloud Backup!`);
       } else {
@@ -220,6 +257,42 @@ export default function RestoreBackup() {
                 count++;
               } catch (err) {
                 console.error(err);
+              }
+            }
+          }
+          if (parsed.savingsAccounts && Array.isArray(parsed.savingsAccounts)) {
+            for (const account of parsed.savingsAccounts) {
+              try {
+                const histories = parsed.savingsHistories?.filter(h => h.savingsAccount === account._id) || [];
+                let historyNet = 0;
+                histories.forEach(h => {
+                  if (h.type === 'Deposit') historyNet += Number(h.amount) || 0;
+                  if (h.type === 'Withdraw') historyNet -= Number(h.amount) || 0;
+                });
+                const initialBalance = account.balance - historyNet;
+    
+                const res = await api.post('/savings', {
+                  accountName: account.accountName || 'Restored Savings',
+                  balance: initialBalance > 0 ? initialBalance : 0,
+                  goal: account.goal,
+                  type: account.type || 'Bank'
+                });
+                count++;
+                
+                for (const history of histories) {
+                  try {
+                    await api.post(`/savings/${res.data._id}/transaction`, {
+                      type: history.type,
+                      amount: Number(history.amount) || 0,
+                      date: history.date
+                    });
+                    count++;
+                  } catch (err) {
+                    console.error('Failed to restore savings history:', err);
+                  }
+                }
+              } catch (err) {
+                console.error('Failed to restore savings account:', err);
               }
             }
           }
