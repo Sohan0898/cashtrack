@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore';
@@ -14,6 +14,10 @@ const Income = () => {
   const { user } = useAuthStore();
   const [editingRecord, setEditingRecord] = useState(null);
   const queryClient = useQueryClient();
+
+  const currentDate = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
+  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
   const { data: incomes, isLoading } = useQuery({
     queryKey: ['income'],
@@ -34,6 +38,14 @@ const Income = () => {
       toast.error('Failed to delete income');
     }
   });
+
+  const filteredIncomes = useMemo(() => {
+    if (!incomes) return [];
+    return incomes.filter(inc => {
+      const d = new Date(inc.date);
+      return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+    });
+  }, [incomes, selectedMonth, selectedYear]);
 
   const formatDate = (d) => {
     const date = new Date(d);
@@ -72,7 +84,32 @@ const Income = () => {
           animate={{ opacity: 1, x: 0 }}
           className="glass-card p-6 lg:col-span-2"
         >
-          <h3 className="text-lg font-semibold mb-4">Income History</h3>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+            <h3 className="text-lg font-semibold">Income History</h3>
+            <div className="flex gap-2">
+              <select 
+                className="select select-bordered select-sm" 
+                value={selectedMonth} 
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+              >
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <option key={i} value={i}>
+                    {new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' })}
+                  </option>
+                ))}
+              </select>
+              <select 
+                className="select select-bordered select-sm" 
+                value={selectedYear} 
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+              >
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const year = new Date().getFullYear() - i;
+                  return <option key={year} value={year}>{year}</option>;
+                })}
+              </select>
+            </div>
+          </div>
           
           {isLoading ? (
             <div className="flex justify-center p-10"><span className="loading loading-spinner text-primary"></span></div>
@@ -93,7 +130,7 @@ const Income = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {(incomes || []).map(inc => (
+                  {(filteredIncomes || []).map(inc => (
                     <tr key={inc._id} className="whitespace-nowrap">
                       <td>{formatDate(inc.date)}</td>
                       <td className="text-base-content/70 text-sm">{formatTime(inc.time)}</td>
