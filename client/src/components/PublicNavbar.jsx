@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 export default function PublicNavbar() {
   const { t } = useTranslation();
-  const { isAuthenticated, user, login, logout, theme, setTheme } = useAuthStore();
+  const { isAuthenticated, user, login, logout, isLoading, theme, setTheme } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -98,7 +98,9 @@ export default function PublicNavbar() {
             </button>
             
             {/* Auth Dropdown / Sign In Button */}
-            {isAuthenticated ? (
+            {isLoading ? (
+              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-base-content/10 animate-pulse rounded-full shrink-0"></div>
+            ) : isAuthenticated ? (
               <div className="dropdown dropdown-end">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                   <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-base-200 flex items-center justify-center border border-base-300">

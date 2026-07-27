@@ -10,10 +10,8 @@ import PublicNavbar from '../components/PublicNavbar';
 
 export default function Landing() {
   const { t } = useTranslation();
-  const { isAuthenticated, user, login, logout, loading, theme, setTheme } = useAuthStore();
+  const { isAuthenticated, user, login, logout, isLoading, theme, setTheme } = useAuthStore();
   const navigate = useNavigate();
-
-  if (loading) return null;
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content font-sans overflow-hidden relative transition-colors duration-300">
@@ -49,7 +47,9 @@ export default function Landing() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {isAuthenticated ? (
+            {isLoading ? (
+              <div className="w-full sm:w-48 h-12 bg-base-content/10 animate-pulse rounded-xl"></div>
+            ) : isAuthenticated ? (
               <Link to="/dashboard" className="w-full sm:w-auto bg-primary text-primary-content px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
                 Go to Dashboard <ArrowRight className="w-4 h-4 -rotate-45" />
               </Link>
