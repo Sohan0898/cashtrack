@@ -116,9 +116,9 @@ const Income = () => {
           ) : incomes?.length === 0 ? (
             <div className="text-center py-10 text-base-content/50">No income records found.</div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-auto max-h-[500px] custom-scrollbar">
               <table className="table table-zebra w-full">
-                <thead>
+                <thead className="sticky top-0 bg-base-200/95 backdrop-blur z-10">
                   <tr className="whitespace-nowrap">
                     <th>Date</th>
                     <th>Time</th>
