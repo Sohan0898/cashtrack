@@ -1,12 +1,15 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User as UserIcon, Camera, ShieldAlert, Trash2, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import useAuthStore from '../store/authStore';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
+import { logoutFirebase } from '../lib/firebase';
 
 const ManageAccount = () => {
   const { user, updateUser, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [name, setName] = useState(user?.name || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
   const [isSaving, setIsSaving] = useState(false);
@@ -18,6 +21,8 @@ const ManageAccount = () => {
       await api.delete('/auth/account');
       toast.success('Account deleted');
       document.getElementById('delete_account_modal').close();
+      navigate('/');
+      await logoutFirebase();
       await logout();
     } catch (error) {
       toast.error('Failed to delete account');
