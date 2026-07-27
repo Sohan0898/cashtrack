@@ -29,6 +29,15 @@ const Dashboard = () => {
   prevDate.setMonth(now.getMonth() - 1);
   const previousMonthName = prevDate.toLocaleString('default', { month: 'long' });
 
+  const formatDate = (d) => {
+    const date = new Date(d);
+    return `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })}, ${date.getFullYear()}`;
+  };
+
+  const formatTime = (d) => {
+    return new Date(d).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
   const cards = [
     { 
       title: t('Total Available Balance') || 'Total Available Balance', 
@@ -119,7 +128,7 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <p className="font-medium text-sm">{tx.title}</p>
-                    <p className="text-xs text-base-content/60">{new Date(tx.date).toLocaleDateString()} &middot; {tx.category} &middot; {tx.channel}</p>
+                    <p className="text-xs text-base-content/60">{formatDate(tx.date)} &middot; {formatTime(tx.date)} &middot; {tx.category} &middot; {tx.channel}</p>
                   </div>
                 </div>
                 <div className={`font-semibold ${tx.type === 'income' ? 'text-success' : 'text-error'}`}>

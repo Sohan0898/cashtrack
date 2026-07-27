@@ -35,6 +35,15 @@ const Expenses = () => {
     }
   });
 
+  const formatDate = (d) => {
+    const date = new Date(d);
+    return `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })}, ${date.getFullYear()}`;
+  };
+
+  const formatTime = (d) => {
+    return new Date(d).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -71,6 +80,7 @@ const Expenses = () => {
                 <thead>
                   <tr className="whitespace-nowrap">
                     <th>Date</th>
+                    <th>Time</th>
                     <th>Title</th>
                     <th>Category</th>
                     <th>Channel</th>
@@ -81,7 +91,8 @@ const Expenses = () => {
                 <tbody>
                   {(expenses || []).map(exp => (
                     <tr key={exp._id} className="whitespace-nowrap">
-                      <td>{new Date(exp.date).toLocaleDateString()}</td>
+                      <td>{formatDate(exp.date)}</td>
+                      <td className="text-base-content/70 text-sm">{formatTime(exp.date)}</td>
                       <td className="font-medium">{exp.title}</td>
                       <td>
                         <span className="badge badge-sm badge-outline">{exp.category}</span>
