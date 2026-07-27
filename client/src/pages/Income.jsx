@@ -40,8 +40,12 @@ const Income = () => {
     return `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })}, ${date.getFullYear()}`;
   };
 
-  const formatTime = (d) => {
-    return new Date(d).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '';
+    const [h, m] = timeStr.split(':');
+    const d = new Date();
+    d.setHours(h, m, 0);
+    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
   return (
@@ -92,7 +96,7 @@ const Income = () => {
                   {(incomes || []).map(inc => (
                     <tr key={inc._id} className="whitespace-nowrap">
                       <td>{formatDate(inc.date)}</td>
-                      <td className="text-base-content/70 text-sm">{formatTime(inc.date)}</td>
+                      <td className="text-base-content/70 text-sm">{formatTime(inc.time)}</td>
                       <td className="font-medium">{inc.title}</td>
                       <td>
                         <span className="badge badge-sm badge-outline">{inc.category}</span>
