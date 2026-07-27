@@ -185,7 +185,7 @@ export default function PublicNavbar() {
 
       {/* Login Glass Modal (shared) */}
       <dialog id="login_modal" className="modal modal-bottom sm:modal-middle backdrop-blur-md">
-        <div className="modal-box bg-base-100/60 dark:bg-base-100/50 backdrop-blur-2xl border border-base-content/10 rounded-3xl p-8 max-w-md shadow-2xl relative">
+        <div className="modal-box bg-base-100/70 dark:bg-black/60 backdrop-blur-2xl border border-base-content/10 rounded-3xl p-8 max-w-md shadow-2xl relative">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/60 hover:text-base-content">
               <X className="w-5 h-5" />
