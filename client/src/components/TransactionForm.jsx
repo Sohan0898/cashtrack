@@ -104,56 +104,56 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
         <div className="form-control">
-          <label className="label"><span className="label-text">Title</span></label>
-          <input type="text" className={`input input-bordered ${errors.title ? 'input-error' : ''}`} {...register('title')} placeholder={type === 'income' ? 'e.g. Monthly Salary' : 'e.g. Monthly Bill'} />
-          {errors.title && <span className="text-error text-sm mt-1">{errors.title.message}</span>}
+          <label className="label"><span className="label-text text-xs sm:text-sm">Title</span></label>
+          <input type="text" className={`input input-bordered input-sm sm:input-md text-sm ${errors.title ? 'input-error' : ''}`} {...register('title')} placeholder={type === 'income' ? 'e.g. Salary' : 'e.g. Bill'} />
+          {errors.title && <span className="text-error text-xs mt-1">{errors.title.message}</span>}
         </div>
 
         <div className="form-control">
-          <label className="label"><span className="label-text">Amount</span></label>
-          <input type="number" step="0.01" className={`input input-bordered ${errors.amount ? 'input-error' : ''}`} {...register('amount', { valueAsNumber: true })} placeholder="0.00" />
-          {errors.amount && <span className="text-error text-sm mt-1">{errors.amount.message}</span>}
+          <label className="label"><span className="label-text text-xs sm:text-sm">Amount</span></label>
+          <input type="number" step="0.01" className={`input input-bordered input-sm sm:input-md text-sm ${errors.amount ? 'input-error' : ''}`} {...register('amount', { valueAsNumber: true })} placeholder="0.00" />
+          {errors.amount && <span className="text-error text-xs mt-1">{errors.amount.message}</span>}
         </div>
 
         <div className="form-control">
-          <label className="label"><span className="label-text">Category</span></label>
-          <select className={`select select-bordered ${errors.category ? 'select-error' : ''}`} {...register('category')}>
-            <option value="">Select a category</option>
+          <label className="label"><span className="label-text text-xs sm:text-sm">Category</span></label>
+          <select className={`select select-bordered select-sm sm:select-md text-sm px-2 sm:px-4 ${errors.category ? 'select-error' : ''}`} {...register('category')}>
+            <option value="">Select</option>
             {categories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-          {errors.category && <span className="text-error text-sm mt-1">{errors.category.message}</span>}
+          {errors.category && <span className="text-error text-xs mt-1">{errors.category.message}</span>}
           
           <button 
             type="button" 
             onClick={() => setIsManageModalOpen(true)}
-            className="btn btn-ghost btn-xs text-info hover:bg-info/20 mt-1 self-start flex gap-1 items-center"
+            className="btn btn-ghost btn-xs text-info hover:bg-info/20 mt-1 self-start flex gap-1 items-center px-1"
           >
-            <Settings2 className="w-3 h-3" /> Manage Categories
+            <Settings2 className="w-3 h-3" /> Manage
           </button>
         </div>
 
         <div className="form-control">
-          <label className="label"><span className="label-text">Channel</span></label>
-          <select className={`select select-bordered ${errors.channel ? 'select-error' : ''}`} {...register('channel')}>
+          <label className="label"><span className="label-text text-xs sm:text-sm">Channel</span></label>
+          <select className={`select select-bordered select-sm sm:select-md text-sm px-2 sm:px-4 ${errors.channel ? 'select-error' : ''}`} {...register('channel')}>
             {['Bank', 'Cash', 'Bkash', 'Rocket', 'Nagad', 'Upay', 'Card', 'Virtual Card'].map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
-          {errors.channel && <span className="text-error text-sm mt-1">{errors.channel.message}</span>}
+          {errors.channel && <span className="text-error text-xs mt-1">{errors.channel.message}</span>}
         </div>
 
         <div className="form-control">
-          <label className="label"><span className="label-text">Date</span></label>
-          <input type="date" className={`input input-bordered ${errors.date ? 'input-error' : ''}`} {...register('date')} />
-          {errors.date && <span className="text-error text-sm mt-1">{errors.date.message}</span>}
+          <label className="label"><span className="label-text text-xs sm:text-sm">Date</span></label>
+          <input type="date" className={`input input-bordered input-sm sm:input-md text-sm px-2 sm:px-4 ${errors.date ? 'input-error' : ''}`} {...register('date')} />
+          {errors.date && <span className="text-error text-xs mt-1">{errors.date.message}</span>}
         </div>
 
         <div className="form-control">
-          <label className="label"><span className="label-text">Time</span></label>
-          <input type="time" className={`input input-bordered ${errors.time ? 'input-error' : ''}`} {...register('time')} />
-          {errors.time && <span className="text-error text-sm mt-1">{errors.time.message}</span>}
+          <label className="label"><span className="label-text text-xs sm:text-sm">Time</span></label>
+          <input type="time" className={`input input-bordered input-sm sm:input-md text-sm px-2 sm:px-4 ${errors.time ? 'input-error' : ''}`} {...register('time')} />
+          {errors.time && <span className="text-error text-xs mt-1">{errors.time.message}</span>}
         </div>
       </div>
 
