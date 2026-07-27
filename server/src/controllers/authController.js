@@ -87,6 +87,8 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   res.cookie('jwt', '', {
     httpOnly: true,
+    secure: process.env.NODE_ENV !== 'development',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     expires: new Date(0),
   });
   res.status(200).json({ message: 'Logged out successfully' });
@@ -171,6 +173,8 @@ export const deleteAccount = async (req, res) => {
     // Clear cookie
     res.cookie('jwt', '', {
       httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       expires: new Date(0),
     });
 
