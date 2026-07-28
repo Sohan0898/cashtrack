@@ -6,10 +6,11 @@ import Category from '../models/Category.js';
 import Savings from '../models/Savings.js';
 import SavingsHistory from '../models/SavingsHistory.js';
 import BankInterest from '../models/BankInterest.js';
+import Session from '../models/Session.js';
 import jwt from 'jsonwebtoken';
 
-const generateToken = (res, userId) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+const generateToken = (res, userId, sessionId) => {
+  const token = jwt.sign({ userId, sessionId }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 
@@ -80,7 +81,15 @@ export const login = async (req, res) => {
       await user.save();
     }
 
-    const token = generateToken(res, user._id);
+    // Create session record
+    const session = await Session.create({
+      user: user._id,
+      ipAddress: ip,
+      device: userAgent,
+      lastActive: now,
+    });
+
+    const token = generateToken(res, user._id, session._id);
 
     res.status(200).json({
       token,
@@ -104,7 +113,11 @@ export const login = async (req, res) => {
 // @desc    Logout user / clear cookie
 // @route   POST /api/auth/logout
 // @access  Public
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  if (req.sessionId) {
+    await Session.findByIdAndDelete(req.sessionId);
+  }
+
   res.cookie('jwt', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
@@ -242,3 +255,55 @@ export const deleteAccount = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete account' });
   }
 };
+
+// @desc    Get all active sessions for current user
+// @route   GET /api/auth/sessions
+// @access  Private
+export const getSessions = async (req, res) => {
+  try {
+    const sessions = await Session.find({ user: req.user._id }).sort({ lastActive: -1 });
+    // Add a flag to indicate which session is the current one
+    const sessionsWithCurrent = sessions.map(s => ({
+      ...s.toObject(),
+      isCurrent: s._id.toString() === req.sessionId
+    }));
+    res.json(sessionsWithCurrent);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch sessions' });
+  }
+};
+
+// @desc    Revoke a specific session
+// @route   DELETE /api/auth/sessions/:id
+// @access  Private
+export const revokeSession = async (req, res) => {
+  try {
+    const session = await Session.findOne({ _id: req.params.id, user: req.user._id });
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+    await Session.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Session revoked' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to revoke session' });
+  }
+};
+
+// @desc    Revoke all other sessions
+// @route   DELETE /api/auth/sessions
+// @access  Private
+export const revokeAllOtherSessions = async (req, res) => {
+  try {
+    if (!req.sessionId) {
+      return res.status(400).json({ message: 'Current session ID missing' });
+    }
+    await Session.deleteMany({
+      user: req.user._id,
+      _id: { $ne: req.sessionId }
+    });
+    res.json({ message: 'All other sessions revoked' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to revoke other sessions' });
+  }
+};
+

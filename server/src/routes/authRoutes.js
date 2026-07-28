@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, logout, getUserProfile, updateUserProfile, clearData, deleteAccount, backupData } from '../controllers/authController.js';
+import { login, logout, getUserProfile, updateUserProfile, clearData, deleteAccount, backupData, getSessions, revokeSession, revokeAllOtherSessions } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -10,5 +10,8 @@ router.route('/profile').get(protect, getUserProfile).put(protect, updateUserPro
 router.get('/backup', protect, backupData);
 router.delete('/data', protect, clearData);
 router.delete('/account', protect, deleteAccount);
+router.get('/sessions', protect, getSessions);
+router.delete('/sessions/:id', protect, revokeSession);
+router.delete('/sessions', protect, revokeAllOtherSessions);
 
 export default router;

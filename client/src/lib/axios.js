@@ -11,6 +11,12 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response && error.response.status === 401) {
+      if (window.location.pathname !== '/login') {
+        localStorage.removeItem('cashtrack_token');
+        window.location.href = '/login';
+      }
+    }
     return Promise.reject(error);
   }
 );

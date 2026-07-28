@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle, LogOut, Laptop } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '../lib/i18n';
@@ -14,16 +14,43 @@ const Settings = () => {
   const [language, setLanguage] = useState(user?.language || 'en');
   const [isSaving, setIsSaving] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
-  const [currentIp, setCurrentIp] = useState('Fetching...');
-  const [currentDevice, setCurrentDevice] = useState('Fetching...');
+  const [sessions, setSessions] = useState([]);
+  const [loadingSessions, setLoadingSessions] = useState(false);
 
   useEffect(() => {
-    fetch('https://api.ipify.org?format=json')
-      .then(res => res.json())
-      .then(data => setCurrentIp(data.ip))
-      .catch(() => setCurrentIp(user?.lastLoginIp || 'Unavailable'));
-    setCurrentDevice(navigator.userAgent);
-  }, [user?.lastLoginIp]);
+    const fetchSessions = async () => {
+      setLoadingSessions(true);
+      try {
+        const res = await api.get('/auth/sessions');
+        setSessions(res.data);
+      } catch (error) {
+        console.error('Failed to fetch sessions');
+      } finally {
+        setLoadingSessions(false);
+      }
+    };
+    fetchSessions();
+  }, []);
+
+  const handleRevokeSession = async (id) => {
+    try {
+      await api.delete(`/auth/sessions/${id}`);
+      setSessions(sessions.filter(s => s._id !== id));
+      toast.success('Device logged out successfully');
+    } catch (error) {
+      toast.error('Failed to log out device');
+    }
+  };
+
+  const handleRevokeAll = async () => {
+    try {
+      await api.delete('/auth/sessions');
+      setSessions(sessions.filter(s => s.isCurrent));
+      toast.success('All other devices logged out');
+    } catch (error) {
+      toast.error('Failed to log out devices');
+    }
+  };
 
   const handleClearData = async () => {
     setIsClearing(true);
@@ -102,22 +129,51 @@ const Settings = () => {
 
         {/* Security / Login Info */}
         <div className="mt-8 pt-8 border-t border-base-200">
-          <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-            <ShieldAlert className="w-5 h-5 text-info" /> Security & Session Info
-          </h3>
-          <div className="bg-base-200/50 rounded-xl p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 pb-3">
-              <span className="text-base-content/70 text-sm font-medium">Last Login</span>
-              <span className="font-semibold">{user?.lastLogin ? new Date(user.lastLogin).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Current Session'}</span>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 pb-3">
-              <span className="text-base-content/70 text-sm font-medium">Current IP Address</span>
-              <span className="font-mono text-sm bg-base-300 px-2 py-1 rounded">{currentIp}</span>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-              <span className="text-base-content/70 text-sm font-medium">Current Device</span>
-              <span className="font-medium text-xs sm:max-w-xs text-left sm:text-right break-all" title={currentDevice}>{currentDevice}</span>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-info" /> Active Devices
+            </h3>
+            {sessions.length > 1 && (
+              <button onClick={handleRevokeAll} className="btn btn-sm btn-outline btn-error">
+                Log out all other devices
+              </button>
+            )}
+          </div>
+          
+          <div className="bg-base-200/50 rounded-xl p-4 space-y-4">
+            {loadingSessions ? (
+              <div className="flex justify-center p-4"><span className="loading loading-spinner"></span></div>
+            ) : (
+              sessions.map((session) => (
+                <div key={session._id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 last:border-0 pb-4 last:pb-0 gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg ${session.isCurrent ? 'bg-success/20 text-success' : 'bg-base-300'}`}>
+                      <Laptop className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm max-w-[200px] sm:max-w-xs truncate" title={session.device}>{session.device || 'Unknown Device'}</span>
+                        {session.isCurrent && <span className="badge badge-success badge-sm">Current</span>}
+                      </div>
+                      <div className="text-xs text-base-content/70 mt-1">
+                        IP: <span className="font-mono">{session.ipAddress}</span> • Last active: {new Date(session.lastActive).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}
+                      </div>
+                    </div>
+                  </div>
+                  {!session.isCurrent && (
+                    <button 
+                      onClick={() => handleRevokeSession(session._id)}
+                      className="btn btn-sm btn-ghost text-error hover:bg-error/20"
+                    >
+                      <LogOut className="w-4 h-4" /> Log out
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+            {sessions.length === 0 && !loadingSessions && (
+              <div className="text-center text-base-content/70 text-sm">No active sessions found (You may need to log back in to activate tracking).</div>
+            )}
           </div>
         </div>
 

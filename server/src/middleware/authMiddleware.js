@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Session from '../models/Session.js';
 
 export const protect = async (req, res, next) => {
   let token;
@@ -9,6 +10,16 @@ export const protect = async (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      // Verify session is still valid (not revoked)
+      if (decoded.sessionId) {
+        const sessionExists = await Session.exists({ _id: decoded.sessionId });
+        if (!sessionExists) {
+          throw new Error('Session revoked');
+        }
+        req.sessionId = decoded.sessionId;
+      }
+
       req.user = await User.findById(decoded.userId).select('-password');
       next();
     } catch (error) {
