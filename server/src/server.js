@@ -13,6 +13,7 @@ import expenseRoutes from './routes/expenseRoutes.js';
 import savingsRoutes from './routes/savingsRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import interestRoutes from './routes/interestRoutes.js';
 
 // Load env vars
 dotenv.config();
@@ -57,6 +58,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/savings', savingsRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/interest', interestRoutes);
 
 app.get('/', (req, res) => {
   res.send('CashTrack API is running...');

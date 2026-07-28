@@ -5,6 +5,7 @@ import Expense from '../models/Expense.js';
 import Category from '../models/Category.js';
 import Savings from '../models/Savings.js';
 import SavingsHistory from '../models/SavingsHistory.js';
+import BankInterest from '../models/BankInterest.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (res, userId) => {
@@ -155,6 +156,7 @@ export const clearData = async (req, res) => {
     await Expense.deleteMany({ user: req.user._id });
     await Savings.deleteMany({ user: req.user._id });
     await SavingsHistory.deleteMany({ user: req.user._id });
+    await BankInterest.deleteMany({ user: req.user._id });
     res.status(200).json({ message: 'Data cleared successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to clear data' });
@@ -172,6 +174,7 @@ export const deleteAccount = async (req, res) => {
     await Category.deleteMany({ user: req.user._id });
     await Savings.deleteMany({ user: req.user._id });
     await SavingsHistory.deleteMany({ user: req.user._id });
+    await BankInterest.deleteMany({ user: req.user._id });
     
     // Delete user
     await User.findByIdAndDelete(req.user._id);
