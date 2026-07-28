@@ -3,15 +3,21 @@ import { Download, Database, HardDriveDownload, Upload, Cloud, RefreshCw, FileSp
 import { motion } from 'framer-motion';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
+import useAuthStore from '../store/authStore';
 
 export default function RestoreBackup() {
+  const { user } = useAuthStore();
+  
+  const getSnapshotKey = () => `google_cloud_backup_snapshot_${user?._id || 'default'}`;
+  const getSyncKey = () => `last_google_sync_${user?._id || 'default'}`;
+  const getAutoSyncKey = () => `google_autosync_${user?._id || 'default'}`;
   const [isExportingCSV, setIsExportingCSV] = useState(false);
   const [isExportingJSON, setIsExportingJSON] = useState(false);
   const [isGoogleSyncing, setIsGoogleSyncing] = useState(false);
   const [isGoogleRestoring, setIsGoogleRestoring] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [lastGoogleSync, setLastGoogleSync] = useState(localStorage.getItem('last_google_sync') || null);
-  const [autoSyncEnabled, setAutoSyncEnabled] = useState(localStorage.getItem('google_autosync') === 'true');
+  const [lastGoogleSync, setLastGoogleSync] = useState(localStorage.getItem(getSyncKey()) || localStorage.getItem('last_google_sync') || null);
+  const [autoSyncEnabled, setAutoSyncEnabled] = useState((localStorage.getItem(getAutoSyncKey()) || localStorage.getItem('google_autosync')) === 'true');
 
   const [dateRange, setDateRange] = useState(() => {
     const today = new Date();
@@ -94,10 +100,10 @@ export default function RestoreBackup() {
       const backupData = res.data;
       
       // Save backup snapshot to localStorage & simulate cloud sync
-      localStorage.setItem('google_cloud_backup_snapshot', JSON.stringify(backupData));
+      localStorage.setItem(getSnapshotKey(), JSON.stringify(backupData));
       const syncTime = new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
       setLastGoogleSync(syncTime);
-      localStorage.setItem('last_google_sync', syncTime);
+      localStorage.setItem(getSyncKey(), syncTime);
       
       await new Promise(r => setTimeout(r, 1200));
       toast.success('Successfully backed up & synced to Google Drive Cloud!');
@@ -118,7 +124,12 @@ export default function RestoreBackup() {
   const handleGoogleRestore = async () => {
     setIsGoogleRestoring(true);
     try {
-      const savedSnapshot = localStorage.getItem('google_cloud_backup_snapshot');
+      let savedSnapshot = localStorage.getItem(getSnapshotKey());
+      if (!savedSnapshot) {
+        // Fallback for older backups
+        savedSnapshot = localStorage.getItem('google_cloud_backup_snapshot');
+      }
+      
       if (!savedSnapshot) {
         toast.error('No Google Cloud backup snapshot found. Please create a backup first.');
         setIsGoogleRestoring(false);
@@ -446,7 +457,7 @@ export default function RestoreBackup() {
   const toggleAutoSync = () => {
     const nextVal = !autoSyncEnabled;
     setAutoSyncEnabled(nextVal);
-    localStorage.setItem('google_autosync', nextVal.toString());
+    localStorage.setItem(getAutoSyncKey(), nextVal.toString());
     toast.success(nextVal ? 'Google Cloud Auto-Sync Enabled' : 'Auto-Sync Disabled');
   };
 
