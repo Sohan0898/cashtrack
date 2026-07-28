@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 import toast from 'react-hot-toast';
 
-const COLORS = ['#14B8A6', '#10B981', '#0F172A', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#EF4444'];
+const COLORS = ['#14B8A6', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#EF4444', '#06B6D4', '#84CC16', '#F97316', '#6366F1'];
 
 const Reports = () => {
   const { t } = useTranslation();
@@ -174,38 +174,38 @@ const Reports = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6">
             <h3 className="text-lg font-semibold mb-6 text-center">Income by Category</h3>
             {incomeData.length > 0 ? (
-              <div className="h-80">
+              <div className="h-[450px] lg:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={incomeData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
+                    <Pie data={incomeData} cx="50%" cy="40%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
                       {incomeData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Pie>
                     <RechartsTooltip formatter={(value) => `${formatCurrency(value, user?.currency)}`} />
-                    <Legend />
+                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-80 flex items-center justify-center text-base-content/50">No income data for this period</div>
+              <div className="h-[450px] lg:h-[400px] flex items-center justify-center text-base-content/50">No income data for this period</div>
             )}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-6">
             <h3 className="text-lg font-semibold mb-6 text-center">Expense by Category</h3>
             {expenseData.length > 0 ? (
-              <div className="h-80">
+              <div className="h-[450px] lg:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={expenseData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
+                    <Pie data={expenseData} cx="50%" cy="40%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value">
                       {expenseData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                     </Pie>
                     <RechartsTooltip formatter={(value) => `${formatCurrency(value, user?.currency)}`} />
-                    <Legend />
+                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-80 flex items-center justify-center text-base-content/50">No expense data for this period</div>
+              <div className="h-[450px] lg:h-[400px] flex items-center justify-center text-base-content/50">No expense data for this period</div>
             )}
           </motion.div>
         </div>
