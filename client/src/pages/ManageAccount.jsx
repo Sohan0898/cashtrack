@@ -131,7 +131,7 @@ const ManageAccount = () => {
           
           <div className="flex justify-end pt-4 mt-4">
             <button className="btn btn-primary" onClick={handleSaveProfile} disabled={isSaving}>
-              {isSaving ? <span className="loading loading-spinner"></span> : 'Save Profile'}
+              {isSaving ? <span className="loading loading-bars"></span> : 'Save Profile'}
             </button>
           </div>
         </div>
@@ -169,7 +169,7 @@ const ManageAccount = () => {
             <form method="dialog">
               <button className="btn mr-2">Cancel</button>
               <button className="btn btn-error" onClick={(e) => { e.preventDefault(); handleDeleteAccount(); }} disabled={isDeleting}>
-                {isDeleting ? <span className="loading loading-spinner"></span> : 'Yes, delete my account'}
+                {isDeleting ? <span className="loading loading-bars"></span> : 'Yes, delete my account'}
               </button>
             </form>
           </div>

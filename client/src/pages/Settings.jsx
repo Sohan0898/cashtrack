@@ -209,7 +209,7 @@ const Settings = () => {
 
         <div className="flex justify-end pt-4">
           <button className="btn btn-primary" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? <span className="loading loading-spinner"></span> : 'Save Changes'}
+            {isSaving ? <span className="loading loading-bars"></span> : 'Save Changes'}
           </button>
         </div>
 
@@ -262,7 +262,7 @@ const Settings = () => {
           
           <div className="bg-base-200/50 rounded-xl p-4 space-y-4">
             {loadingSessions ? (
-              <div className="flex justify-center p-4"><span className="loading loading-spinner"></span></div>
+              <div className="flex justify-center p-4"><span className="loading loading-bars"></span></div>
             ) : (
               sessions.map((session) => (
                 <div key={session._id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 last:border-0 pb-4 last:pb-0 gap-4">
@@ -330,7 +330,7 @@ const Settings = () => {
             <form method="dialog">
               <button className="btn mr-2">Cancel</button>
               <button className="btn btn-error" onClick={(e) => { e.preventDefault(); handleClearData(); }} disabled={isClearing}>
-                {isClearing ? <span className="loading loading-spinner"></span> : 'Yes, clear my data'}
+                {isClearing ? <span className="loading loading-bars"></span> : 'Yes, clear my data'}
               </button>
             </form>
           </div>

@@ -163,7 +163,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
       </div>
 
       <button type="submit" className="btn btn-primary w-full" disabled={isSubmitting || mutation.isPending}>
-        {isSubmitting || mutation.isPending ? <span className="loading loading-spinner"></span> : `${initialData ? 'Update' : 'Add'} ${type === 'income' ? 'Income' : 'Expense'}`}
+        {isSubmitting || mutation.isPending ? <span className="loading loading-bars"></span> : `${initialData ? 'Update' : 'Add'} ${type === 'income' ? 'Income' : 'Expense'}`}
       </button>
     </form>
 
@@ -186,7 +186,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
               disabled={!newCategoryName || addCategoryMutation.isPending}
               onClick={() => addCategoryMutation.mutate(newCategoryName)}
             >
-              {addCategoryMutation.isPending ? <span className="loading loading-spinner loading-xs"></span> : 'Add'}
+              {addCategoryMutation.isPending ? <span className="loading loading-bars loading-xs"></span> : 'Add'}
             </button>
           </div>
 

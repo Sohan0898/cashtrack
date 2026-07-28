@@ -496,7 +496,7 @@ export default function RestoreBackup() {
                 onClick={handleGoogleRestore}
                 disabled={isGoogleRestoring}
               >
-                {isGoogleRestoring ? <span className="loading loading-spinner loading-xs"></span> : <RefreshCw className="w-4 h-4" />}
+                {isGoogleRestoring ? <span className="loading loading-bars loading-xs"></span> : <RefreshCw className="w-4 h-4" />}
                 Restore from Google
               </button>
               <button 
@@ -504,7 +504,7 @@ export default function RestoreBackup() {
                 onClick={handleGoogleBackup}
                 disabled={isGoogleSyncing}
               >
-                {isGoogleSyncing ? <span className="loading loading-spinner loading-xs"></span> : <Cloud className="w-4 h-4" />}
+                {isGoogleSyncing ? <span className="loading loading-bars loading-xs"></span> : <Cloud className="w-4 h-4" />}
                 Sync to Google Drive
               </button>
             </div>
@@ -540,7 +540,7 @@ export default function RestoreBackup() {
                   />
                 </div>
                 <button className="btn btn-outline btn-sm rounded-xl w-full sm:w-auto shrink-0 justify-center" onClick={() => handleExportCSV(false)} disabled={isExportingCSV}>
-                  {isExportingCSV ? <span className="loading loading-spinner loading-xs"></span> : 'Export Dates'}
+                  {isExportingCSV ? <span className="loading loading-bars loading-xs"></span> : 'Export Dates'}
                 </button>
               </div>
             </div>
@@ -559,7 +559,7 @@ export default function RestoreBackup() {
                 onClick={() => handleExportCSV(true)}
                 disabled={isExportingCSV}
               >
-                {isExportingCSV ? <span className="loading loading-spinner loading-xs"></span> : <FileSpreadsheet className="w-4 h-4" />}
+                {isExportingCSV ? <span className="loading loading-bars loading-xs"></span> : <FileSpreadsheet className="w-4 h-4" />}
                 Export to Google Sheets
               </button>
             </div>
@@ -577,7 +577,7 @@ export default function RestoreBackup() {
               <p className="text-xs text-base-content/60">Export full database backup including all categories and settings.</p>
             </div>
             <button className="btn btn-primary rounded-xl gap-2 w-full sm:w-auto shrink-0 justify-center" onClick={handleBackup} disabled={isExportingJSON}>
-              {isExportingJSON ? <span className="loading loading-spinner loading-xs"></span> : <Download className="w-4 h-4" />}
+              {isExportingJSON ? <span className="loading loading-bars loading-xs"></span> : <Download className="w-4 h-4" />}
               Export JSON Backup
             </button>
           </div>
@@ -596,7 +596,7 @@ export default function RestoreBackup() {
             <div className="w-full sm:w-auto shrink-0">
               {isImporting ? (
                 <div className="flex items-center gap-2 text-sm text-primary font-semibold">
-                  <span className="loading loading-spinner loading-sm"></span> Importing data...
+                  <span className="loading loading-bars loading-sm"></span> Importing data...
                 </div>
               ) : (
                 <input 

@@ -56,7 +56,7 @@ const Reports = () => {
           </div>
           <h2 className="text-2xl font-bold flex items-center gap-3">
             {t('Reports') || 'Analytics & Reports'}
-            {isFetching && <span className="loading loading-spinner loading-sm text-primary"></span>}
+            {isFetching && <span className="loading loading-bars loading-sm text-primary"></span>}
           </h2>
         </div>
         <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ const Reports = () => {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center p-20"><span className="loading loading-spinner loading-lg text-primary"></span></div>
+        <div className="flex justify-center p-20"><span className="loading loading-bars loading-lg text-primary"></span></div>
       ) : (
         <div className="space-y-6">
           {data?.totals && (

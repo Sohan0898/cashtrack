@@ -89,7 +89,7 @@ const BankInterest = () => {
           <div className="modal-action">
             <button type="button" className="btn btn-ghost" onClick={() => document.getElementById('clear_interest_modal').close()}>Cancel</button>
             <button type="button" className="btn bg-error text-error-content hover:bg-error/90 border-none" onClick={() => clearMutation.mutate()} disabled={clearMutation.isPending}>
-              {clearMutation.isPending ? <span className="loading loading-spinner"></span> : 'Yes, Delete All'}
+              {clearMutation.isPending ? <span className="loading loading-bars"></span> : 'Yes, Delete All'}
             </button>
           </div>
         </div>
@@ -130,7 +130,7 @@ const BankInterest = () => {
             <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
               <button type="button" className="btn btn-ghost" onClick={() => setInterestTx({ type: null, amount: '', bank: '' })}>Cancel</button>
               <button type="submit" className={`btn border-none ${interestTx.type === 'Add' ? 'bg-error text-error-content hover:bg-error/90' : 'bg-success text-success-content hover:bg-success/90'}`} disabled={interestMutation.isPending}>
-                {interestMutation.isPending ? <span className="loading loading-spinner"></span> : 'Confirm'}
+                {interestMutation.isPending ? <span className="loading loading-bars"></span> : 'Confirm'}
               </button>
             </div>
           </form>
@@ -148,7 +148,7 @@ const BankInterest = () => {
           {/* Cards layout for all devices */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             {isInterestLoading ? (
-              <div className="col-span-full text-center py-8"><span className="loading loading-spinner text-error"></span></div>
+              <div className="col-span-full text-center py-8"><span className="loading loading-bars text-error"></span></div>
             ) : interestData?.history?.length === 0 ? (
               <div className="col-span-full text-center py-8 text-base-content/50">No interest history found.</div>
             ) : (

@@ -191,7 +191,7 @@ const Savings = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-           <div className="col-span-full flex justify-center py-10"><span className="loading loading-spinner text-accent"></span></div>
+           <div className="col-span-full flex justify-center py-10"><span className="loading loading-bars text-accent"></span></div>
         ) : savings?.length === 0 ? (
           <div className="col-span-full text-center py-10 text-base-content/50">No savings accounts found.</div>
         ) : (
@@ -244,7 +244,7 @@ const Savings = () => {
           {/* Cards layout for all devices */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             {isHistoryLoading ? (
-              <div className="col-span-full text-center py-8"><span className="loading loading-spinner text-accent"></span></div>
+              <div className="col-span-full text-center py-8"><span className="loading loading-bars text-accent"></span></div>
             ) : history?.length === 0 ? (
               <div className="col-span-full text-center py-8 text-base-content/50">No saving history found.</div>
             ) : (

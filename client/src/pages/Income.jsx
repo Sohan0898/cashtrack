@@ -112,7 +112,7 @@ const Income = () => {
           </div>
           
           {isLoading ? (
-            <div className="flex justify-center p-10"><span className="loading loading-spinner text-primary"></span></div>
+            <div className="flex justify-center p-10"><span className="loading loading-bars text-primary"></span></div>
           ) : incomes?.length === 0 ? (
             <div className="text-center py-10 text-base-content/50">No income records found.</div>
           ) : (
