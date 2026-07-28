@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema(
     language: { type: String, default: 'en' },
     theme: { type: String, default: 'light' },
     hasSeededCategories: { type: Boolean, default: false },
+    lastLogin: { type: Date },
+    lastLoginIp: { type: String },
+    lastLoginDevice: { type: String },
   },
   { timestamps: true }
 );

@@ -43,6 +43,11 @@ export const login = async (req, res) => {
 
     // Check if user exists
     let user = await User.findOne({ firebaseUid: uid });
+    
+    // Get login tracking info
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || req.ip;
+    const userAgent = req.headers['user-agent'] || 'Unknown Device';
+    const now = new Date();
 
     if (!user) {
       // Check if user with same email exists
@@ -51,6 +56,9 @@ export const login = async (req, res) => {
         // Link firebase UID
         user.firebaseUid = uid;
         user.avatar = picture || user.avatar;
+        user.lastLogin = now;
+        user.lastLoginIp = ip;
+        user.lastLoginDevice = userAgent;
         await user.save();
       } else {
         // Create new user
@@ -59,11 +67,17 @@ export const login = async (req, res) => {
           email,
           firebaseUid: uid,
           avatar: picture || '',
+          lastLogin: now,
+          lastLoginIp: ip,
+          lastLoginDevice: userAgent,
         });
       }
     } else {
-      // User exists, do not overwrite custom name/avatar with Google's defaults
-      // We just log them in
+      // User exists
+      user.lastLogin = now;
+      user.lastLoginIp = ip;
+      user.lastLoginDevice = userAgent;
+      await user.save();
     }
 
     const token = generateToken(res, user._id);
@@ -77,6 +91,9 @@ export const login = async (req, res) => {
       currency: user.currency,
       language: user.language,
       theme: user.theme,
+      lastLogin: user.lastLogin,
+      lastLoginIp: user.lastLoginIp,
+      lastLoginDevice: user.lastLoginDevice,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -112,6 +129,9 @@ export const getUserProfile = async (req, res) => {
       currency: user.currency,
       language: user.language,
       theme: user.theme,
+      lastLogin: user.lastLogin,
+      lastLoginIp: user.lastLoginIp,
+      lastLoginDevice: user.lastLoginDevice,
     });
   } else {
     res.status(404).json({ message: 'User not found' });

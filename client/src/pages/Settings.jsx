@@ -90,10 +90,31 @@ const Settings = () => {
           </button>
         </div>
 
+        {/* Security / Login Info */}
+        <div className="mt-8 pt-8 border-t border-base-200">
+          <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
+            <ShieldAlert className="w-5 h-5 text-info" /> Security & Login Info
+          </h3>
+          <div className="bg-base-200/50 rounded-xl p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 pb-3">
+              <span className="text-base-content/70 text-sm font-medium">Last Login</span>
+              <span className="font-semibold">{user?.lastLogin ? new Date(user.lastLogin).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A'}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 pb-3">
+              <span className="text-base-content/70 text-sm font-medium">IP Address</span>
+              <span className="font-mono text-sm bg-base-300 px-2 py-1 rounded">{user?.lastLoginIp || 'N/A'}</span>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between">
+              <span className="text-base-content/70 text-sm font-medium">Device</span>
+              <span className="font-medium text-xs sm:max-w-xs text-left sm:text-right break-all" title={user?.lastLoginDevice}>{user?.lastLoginDevice || 'N/A'}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Danger Zone */}
         <div className="mt-8 pt-8 border-t border-error/20">
           <h3 className="text-lg font-semibold flex items-center gap-2 mb-4 text-error">
-            <ShieldAlert className="w-5 h-5" /> Danger Zone
+            <AlertTriangle className="w-5 h-5" /> Danger Zone
           </h3>
           
           <div className="space-y-4">
