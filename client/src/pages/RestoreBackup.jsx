@@ -13,9 +13,14 @@ export default function RestoreBackup() {
   const [lastGoogleSync, setLastGoogleSync] = useState(localStorage.getItem('last_google_sync') || null);
   const [autoSyncEnabled, setAutoSyncEnabled] = useState(localStorage.getItem('google_autosync') === 'true');
 
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0]
+  const [dateRange, setDateRange] = useState(() => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    return {
+      startDate: formatDate(firstDay),
+      endDate: formatDate(today)
+    };
   });
 
   // Export to CSV / Google Sheets
@@ -60,14 +65,18 @@ export default function RestoreBackup() {
     setIsExportingJSON(true);
     try {
       const res = await api.get(`/auth/backup`);
-      const data = res.data;
+      const backupData = res.data;
       
-      const json = JSON.stringify(data, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
+      const dataStr = JSON.stringify(backupData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `CashTrack_Backup_${new Date().toISOString().split('T')[0]}.json`;
+      
+      const d = new Date();
+      const localDateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      
+      a.download = `CashTrack_Backup_${localDateStr}.json`;
       a.click();
       toast.success('Local JSON backup downloaded successfully!');
     } catch (e) {
