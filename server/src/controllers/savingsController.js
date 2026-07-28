@@ -55,6 +55,29 @@ export const deleteSavings = async (req, res) => {
   }
 };
 
+// @desc    Update savings account
+// @route   PUT /api/savings/:id
+// @access  Private
+export const updateSavings = async (req, res) => {
+  try {
+    const { accountName, type, goal } = req.body;
+    const savings = await Savings.findById(req.params.id);
+
+    if (savings && savings.user.toString() === req.user._id.toString()) {
+      savings.accountName = accountName || savings.accountName;
+      savings.type = type || savings.type;
+      savings.goal = goal !== undefined ? goal : savings.goal;
+
+      const updatedSavings = await savings.save();
+      res.json(updatedSavings);
+    } else {
+      res.status(404).json({ message: 'Savings account not found or unauthorized' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Add transaction (Deposit/Withdraw) to a savings account
 // @route   POST /api/savings/:id/transaction
 // @access  Private

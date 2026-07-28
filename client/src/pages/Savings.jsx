@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore';
 import { formatCurrency } from '../lib/currency';
 import api from '../lib/axios';
-import { PiggyBank, Plus, Trash2, ArrowUpCircle, ArrowDownCircle, History, Landmark, HeartHandshake } from 'lucide-react';
+import { PiggyBank, Plus, Trash2, ArrowUpCircle, ArrowDownCircle, History, Landmark, HeartHandshake, MoreVertical, Edit2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -15,6 +15,7 @@ const Savings = () => {
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [newAccount, setNewAccount] = useState({ accountName: '', type: 'Bank', goal: '' });
+  const [editingAccount, setEditingAccount] = useState(null);
   
   const [txData, setTxData] = useState({ accountId: null, type: 'Deposit', amount: '' });
   const [interestTx, setInterestTx] = useState({ type: null, amount: '', bank: '' });
@@ -65,6 +66,16 @@ const Savings = () => {
     }
   });
 
+  const editMutation = useMutation({
+    mutationFn: ({ id, data }) => api.put(`/savings/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['savings']);
+      queryClient.invalidateQueries(['dashboard']);
+      toast.success('Account updated');
+      setEditingAccount(null);
+    }
+  });
+
   const txMutation = useMutation({
     mutationFn: ({ id, data }) => api.post(`/savings/${id}/transaction`, data),
     onSuccess: () => {
@@ -101,6 +112,12 @@ const Savings = () => {
     e.preventDefault();
     if (!newAccount.accountName) return toast.error('Account name required');
     createMutation.mutate(newAccount);
+  };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    if (!editingAccount.accountName) return toast.error('Account name required');
+    editMutation.mutate({ id: editingAccount._id, data: editingAccount });
   };
 
   const handleTx = (e) => {
@@ -178,6 +195,34 @@ const Savings = () => {
         </motion.div>
       )}
 
+      {editingAccount && (
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-base-100 p-6 rounded-2xl w-full max-w-sm">
+            <h3 className="font-bold text-lg mb-4">Edit Account</h3>
+            <form onSubmit={handleEdit} className="space-y-4">
+              <div className="form-control">
+                <label className="label"><span className="label-text">Account Name</span></label>
+                <input type="text" className="input input-bordered" value={editingAccount.accountName} onChange={e => setEditingAccount({...editingAccount, accountName: e.target.value})} />
+              </div>
+              <div className="form-control">
+                <label className="label"><span className="label-text">Type</span></label>
+                <select className="select select-bordered" value={editingAccount.type} onChange={e => setEditingAccount({...editingAccount, type: e.target.value})}>
+                  {['Bank', 'Cash', 'Bkash', 'Nagad', 'Card', 'Matir Bank'].map(t => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+              <div className="form-control">
+                <label className="label"><span className="label-text">Goal Amount (Optional)</span></label>
+                <input type="number" className="input input-bordered" value={editingAccount.goal || ''} onChange={e => setEditingAccount({...editingAccount, goal: e.target.value})} />
+              </div>
+              <div className="flex gap-2 justify-end mt-6">
+                <button type="button" className="btn btn-ghost" onClick={() => setEditingAccount(null)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={editMutation.isPending}>Save</button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
            <div className="col-span-full flex justify-center py-10"><span className="loading loading-spinner text-accent"></span></div>
@@ -190,9 +235,10 @@ const Savings = () => {
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg">{acc.accountName}</h3>
                   <div className="dropdown dropdown-end">
-                    <button tabIndex={0} className="btn btn-ghost btn-xs btn-circle"><Trash2 className="w-4 h-4 text-base-content/50" /></button>
+                    <button tabIndex={0} className="btn btn-ghost btn-xs btn-circle"><MoreVertical className="w-4 h-4 text-base-content/50" /></button>
                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-32 border border-base-200">
-                      <li><a className="text-error" onClick={() => deleteMutation.mutate(acc._id)}>Delete</a></li>
+                      <li><a onClick={() => setEditingAccount(acc)}><Edit2 className="w-4 h-4" /> Edit</a></li>
+                      <li><a className="text-error" onClick={() => deleteMutation.mutate(acc._id)}><Trash2 className="w-4 h-4" /> Delete</a></li>
                     </ul>
                   </div>
                 </div>
