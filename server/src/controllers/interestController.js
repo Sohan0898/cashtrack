@@ -93,3 +93,15 @@ export const deleteInterestTransaction = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Clear all bank interest data
+// @route   DELETE /api/interest/clear
+// @access  Private
+export const clearAllInterest = async (req, res) => {
+  try {
+    await BankInterest.deleteMany({ user: req.user._id });
+    res.json({ message: 'All interest data cleared' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
