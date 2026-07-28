@@ -146,7 +146,7 @@ const BankInterest = () => {
         </div>
         
         <div className="overflow-x-auto custom-scrollbar max-h-[500px]">
-          <table className="table w-full">
+          <table className="table w-full hidden md:table">
             <thead className="bg-base-200/50 sticky top-0 z-10 backdrop-blur-md">
               <tr>
                 <th>Date</th>
@@ -191,6 +191,36 @@ const BankInterest = () => {
               )}
             </tbody>
           </table>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden flex flex-col gap-3 p-4">
+            {isInterestLoading ? (
+              <div className="text-center py-8"><span className="loading loading-spinner text-error"></span></div>
+            ) : interestData?.history?.length === 0 ? (
+              <div className="text-center py-8 text-base-content/50">No interest history found.</div>
+            ) : (
+              interestData?.history?.map((tx) => (
+                <div key={tx._id} className="bg-base-200/50 p-4 rounded-xl border border-base-200">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h4 className="font-bold text-base">{tx.type === 'Add' ? tx.bank || 'Bank' : 'Charity/Donation'}</h4>
+                      <div className="text-xs text-base-content/70 mt-1">
+                        {format(new Date(tx.date), 'dd MMM, yyyy')} • {format(new Date(tx.date), 'hh:mm a')}
+                      </div>
+                    </div>
+                    <span className={`font-semibold text-lg ${tx.type === 'Add' ? 'text-error' : 'text-success'}`}>
+                      {tx.type === 'Add' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
+                    </span>
+                  </div>
+                  <div className="flex justify-end items-center mt-2 pt-3 border-t border-base-300">
+                    <div className={`badge badge-sm ${tx.type === 'Add' ? 'badge-error badge-outline' : 'badge-success badge-outline'}`}>
+                      {tx.type === 'Add' ? 'Added' : 'Infaq'}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -117,7 +117,7 @@ const Expenses = () => {
             <div className="text-center py-10 text-base-content/50">No expense records found.</div>
           ) : (
             <div className="overflow-x-auto overflow-y-auto max-h-[500px] custom-scrollbar">
-              <table className="table table-zebra w-full">
+              <table className="table table-zebra w-full hidden md:table">
                 <thead className="sticky top-0 bg-base-200/95 backdrop-blur z-10">
                   <tr className="whitespace-nowrap">
                     <th>Date</th>
@@ -161,6 +161,37 @@ const Expenses = () => {
                   ))}
                 </tbody>
               </table>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden flex flex-col gap-3 p-1">
+                {(filteredExpenses || []).map(exp => (
+                  <div key={exp._id} className="bg-base-200/50 p-4 rounded-xl border border-base-200">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-bold text-base">{exp.title}</h4>
+                        <div className="text-xs text-base-content/70 mt-1">
+                          {formatDate(exp.date)} • {formatTime(exp.time)}
+                        </div>
+                      </div>
+                      <span className="text-error font-semibold text-lg">-{formatCurrency(exp.amount, user?.currency)}</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-base-300">
+                      <div className="flex gap-2 items-center flex-wrap">
+                        <span className="badge badge-sm badge-outline">{exp.category}</span>
+                        <span className="text-xs text-base-content/60">{exp.channel}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => setEditingRecord(exp)} className="btn btn-ghost btn-sm btn-circle text-info">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => deleteMutation.mutate(exp._id)} disabled={deleteMutation.isPending} className="btn btn-ghost btn-sm btn-circle text-error">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </motion.div>
