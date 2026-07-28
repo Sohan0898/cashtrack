@@ -67,19 +67,19 @@ const BankInterest = () => {
           <button className="btn btn-sm bg-error/10 text-error hover:bg-error hover:text-error-content border-none" onClick={() => setInterestTx({ type: 'Add', amount: '', bank: '' })}>
             <Plus className="w-4 h-4" /> Add Interest
           </button>
-          <button className="btn btn-sm bg-base-200 hover:bg-base-300 border-none text-base-content" onClick={() => setInterestTx({ type: 'Infaq', amount: '', bank: '' })}>
+          <button className="btn btn-sm bg-success/10 text-success hover:bg-success hover:text-success-content border-none" onClick={() => setInterestTx({ type: 'Infaq', amount: '', bank: '' })}>
             <HeartHandshake className="w-4 h-4" /> Withdraw Infaq
           </button>
         </div>
       </div>
 
       {interestTx.type && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 mb-6 border border-error/20 bg-error/5">
-          <h3 className="font-semibold mb-4 text-error">{interestTx.type === 'Add' ? 'Add New Interest' : 'Withdraw Infaq'}</h3>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className={`glass-card p-6 mb-6 border ${interestTx.type === 'Add' ? 'border-error/20 bg-error/5' : 'border-success/20 bg-success/5'}`}>
+          <h3 className={`font-semibold mb-4 ${interestTx.type === 'Add' ? 'text-error' : 'text-success'}`}>{interestTx.type === 'Add' ? 'Add New Interest' : 'Withdraw Infaq'}</h3>
           <form onSubmit={handleInterestTx} className="flex flex-col md:flex-row gap-4 items-end">
             <div className="form-control w-full md:w-auto">
               <label className="label"><span className="label-text">Amount</span></label>
-              <input type="number" step="0.01" className="input input-bordered focus:border-error" value={interestTx.amount} onChange={e => setInterestTx({...interestTx, amount: e.target.value})} autoFocus />
+              <input type="number" step="0.01" className={`input input-bordered focus:border-${interestTx.type === 'Add' ? 'error' : 'success'}`} value={interestTx.amount} onChange={e => setInterestTx({...interestTx, amount: e.target.value})} autoFocus />
             </div>
             {interestTx.type === 'Add' && (
               <div className="form-control w-full md:w-auto">
@@ -89,7 +89,7 @@ const BankInterest = () => {
             )}
             <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
               <button type="button" className="btn btn-ghost" onClick={() => setInterestTx({ type: null, amount: '', bank: '' })}>Cancel</button>
-              <button type="submit" className="btn bg-error text-error-content hover:bg-error/90 border-none" disabled={interestMutation.isPending}>
+              <button type="submit" className={`btn border-none ${interestTx.type === 'Add' ? 'bg-error text-error-content hover:bg-error/90' : 'bg-success text-success-content hover:bg-success/90'}`} disabled={interestMutation.isPending}>
                 {interestMutation.isPending ? <span className="loading loading-spinner"></span> : 'Confirm'}
               </button>
             </div>
@@ -139,11 +139,11 @@ const BankInterest = () => {
                       <div className="font-medium">{tx.type === 'Add' ? tx.bank || 'Bank' : 'Charity/Donation'}</div>
                     </td>
                     <td>
-                      <div className={`badge badge-sm ${tx.type === 'Add' ? 'badge-error badge-outline' : 'badge-neutral badge-outline'}`}>
+                      <div className={`badge badge-sm ${tx.type === 'Add' ? 'badge-error badge-outline' : 'badge-success badge-outline'}`}>
                         {tx.type === 'Add' ? 'Added' : 'Infaq'}
                       </div>
                     </td>
-                    <td className={`text-right font-medium ${tx.type === 'Add' ? 'text-error' : 'text-base-content/70'}`}>
+                    <td className={`text-right font-medium ${tx.type === 'Add' ? 'text-error' : 'text-success'}`}>
                       {tx.type === 'Add' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
                     </td>
                   </tr>
