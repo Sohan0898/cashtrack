@@ -2,9 +2,11 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import { useState } from 'react';
+import useAutoSync from '../hooks/useAutoSync';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useAutoSync();
 
   return (
     <div className="flex h-screen bg-base-100 overflow-hidden font-sans">
