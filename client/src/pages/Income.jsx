@@ -165,7 +165,7 @@ const Income = () => {
               {/* Mobile Cards */}
               <div className="md:hidden flex flex-col gap-3 p-1">
                 {(filteredIncomes || []).map(inc => (
-                  <div key={inc._id} className="bg-base-200/50 p-4 rounded-xl border border-base-200">
+                  <div key={inc._id} className="bg-success/10 p-4 rounded-xl border border-success/20">
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="font-bold text-base">{inc.title}</h4>

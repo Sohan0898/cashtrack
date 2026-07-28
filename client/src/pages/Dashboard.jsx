@@ -125,7 +125,7 @@ const Dashboard = () => {
               <p className="text-base-content/50 text-sm text-center py-10">No recent transactions</p>
             )}
             {stats?.recentTransactions?.map((tx, idx) => (
-              <div key={tx._id || idx} className="flex items-center justify-between p-3 bg-base-200/50 rounded-xl transition-all duration-300 hover:bg-base-200 hover:-translate-y-[2px] hover:shadow-md">
+              <div key={tx._id || idx} className="flex items-center justify-between p-3 bg-warning/10 border border-warning/20 rounded-xl transition-all duration-300 hover:bg-warning/20 hover:-translate-y-[2px] hover:shadow-md">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${tx.type === 'income' ? 'bg-success/20 text-success' : 'bg-error/20 text-error'}`}>
                     {tx.type === 'income' ? <ArrowDownToLine className="w-4 h-4" /> : <ArrowUpFromLine className="w-4 h-4" />}

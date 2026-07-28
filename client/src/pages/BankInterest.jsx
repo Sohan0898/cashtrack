@@ -200,7 +200,7 @@ const BankInterest = () => {
               <div className="text-center py-8 text-base-content/50">No interest history found.</div>
             ) : (
               interestData?.history?.map((tx) => (
-                <div key={tx._id} className="bg-base-200/50 p-4 rounded-xl border border-base-200">
+                <div key={tx._id} className="bg-error/10 p-4 rounded-xl border border-error/20">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-bold text-base">{tx.type === 'Add' ? tx.bank || 'Bank' : 'Charity/Donation'}</h4>

@@ -296,7 +296,7 @@ const Savings = () => {
               <div className="text-center py-8 text-base-content/50">No saving history found.</div>
             ) : (
               history?.map((tx) => (
-                <div key={tx._id} className="bg-base-200/50 p-4 rounded-xl border border-base-200">
+                <div key={tx._id} className="bg-success/10 p-4 rounded-xl border border-success/20">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-bold text-base">{tx.savingsAccount?.accountName || 'Deleted Account'}</h4>
