@@ -117,55 +117,10 @@ const Income = () => {
             <div className="text-center py-10 text-base-content/50">No income records found.</div>
           ) : (
             <div className="overflow-x-auto overflow-y-auto max-h-[500px] custom-scrollbar">
-              <table className="table table-zebra w-full hidden md:table">
-                <thead className="sticky top-0 bg-base-200/95 backdrop-blur z-10">
-                  <tr className="whitespace-nowrap">
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Channel</th>
-                    <th>Amount</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(filteredIncomes || []).map(inc => (
-                    <tr key={inc._id} className="whitespace-nowrap">
-                      <td>{formatDate(inc.date)}</td>
-                      <td className="text-base-content/70 text-sm">{formatTime(inc.time)}</td>
-                      <td className="font-medium">{inc.title}</td>
-                      <td>
-                        <span className="badge badge-sm badge-outline">{inc.category}</span>
-                      </td>
-                      <td>{inc.channel}</td>
-                      <td className="text-success font-semibold">+{formatCurrency(inc.amount, user?.currency)}</td>
-                      <td>
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => setEditingRecord(inc)}
-                            className="btn btn-ghost btn-xs text-info hover:bg-info/20"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => deleteMutation.mutate(inc._id)}
-                            disabled={deleteMutation.isPending}
-                            className="btn btn-ghost btn-xs text-error hover:bg-error/20"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Mobile Cards */}
-              <div className="md:hidden flex flex-col gap-3 p-1">
+              {/* Cards layout for all devices */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                 {(filteredIncomes || []).map(inc => (
-                  <div key={inc._id} className="bg-success/10 p-4 rounded-xl border border-success/20">
+                  <div key={inc._id} className="bg-success/20 p-4 rounded-xl border border-success/30 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="font-bold text-base">{inc.title}</h4>
@@ -175,9 +130,9 @@ const Income = () => {
                       </div>
                       <span className="text-success font-semibold text-lg">+{formatCurrency(inc.amount, user?.currency)}</span>
                     </div>
-                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-base-300">
+                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-success/10">
                       <div className="flex gap-2 items-center flex-wrap">
-                        <span className="badge badge-sm badge-outline">{inc.category}</span>
+                        <span className="badge badge-sm badge-outline border-success/40 text-success">{inc.category}</span>
                         <span className="text-xs text-base-content/60">{inc.channel}</span>
                       </div>
                       <div className="flex gap-1">

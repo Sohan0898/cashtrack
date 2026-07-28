@@ -145,62 +145,15 @@ const BankInterest = () => {
           </h3>
         </div>
         
-        <div className="overflow-x-auto custom-scrollbar max-h-[500px]">
-          <table className="table w-full hidden md:table">
-            <thead className="bg-base-200/50 sticky top-0 z-10 backdrop-blur-md">
-              <tr>
-                <th>Date</th>
-                <th>Details</th>
-                <th>Type</th>
-                <th className="text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isInterestLoading ? (
-                <tr>
-                  <td colSpan="4" className="text-center py-8">
-                    <span className="loading loading-spinner text-error"></span>
-                  </td>
-                </tr>
-              ) : interestData?.history?.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="text-center py-8 text-base-content/50">
-                    No interest history found.
-                  </td>
-                </tr>
-              ) : (
-                interestData?.history?.map((tx) => (
-                  <tr key={tx._id} className="hover:bg-error/5 transition-colors">
-                    <td>
-                      <div className="font-medium">{format(new Date(tx.date), 'dd MMM, yyyy')}</div>
-                      <div className="text-xs text-base-content/50">{format(new Date(tx.date), 'hh:mm a')}</div>
-                    </td>
-                    <td>
-                      <div className="font-medium">{tx.type === 'Add' ? tx.bank || 'Bank' : 'Charity/Donation'}</div>
-                    </td>
-                    <td>
-                      <div className={`badge badge-sm ${tx.type === 'Add' ? 'badge-error badge-outline' : 'badge-success badge-outline'}`}>
-                        {tx.type === 'Add' ? 'Added' : 'Infaq'}
-                      </div>
-                    </td>
-                    <td className={`text-right font-medium ${tx.type === 'Add' ? 'text-error' : 'text-success'}`}>
-                      {tx.type === 'Add' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          {/* Mobile Cards */}
-          <div className="md:hidden flex flex-col gap-3 p-4">
+          {/* Cards layout for all devices */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             {isInterestLoading ? (
-              <div className="text-center py-8"><span className="loading loading-spinner text-error"></span></div>
+              <div className="col-span-full text-center py-8"><span className="loading loading-spinner text-error"></span></div>
             ) : interestData?.history?.length === 0 ? (
-              <div className="text-center py-8 text-base-content/50">No interest history found.</div>
+              <div className="col-span-full text-center py-8 text-base-content/50">No interest history found.</div>
             ) : (
               interestData?.history?.map((tx) => (
-                <div key={tx._id} className="bg-error/10 p-4 rounded-xl border border-error/20">
+                <div key={tx._id} className="bg-error/20 p-4 rounded-xl border border-error/30 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-bold text-base">{tx.type === 'Add' ? tx.bank || 'Bank' : 'Charity/Donation'}</h4>
@@ -212,8 +165,8 @@ const BankInterest = () => {
                       {tx.type === 'Add' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
                     </span>
                   </div>
-                  <div className="flex justify-end items-center mt-2 pt-3 border-t border-base-300">
-                    <div className={`badge badge-sm ${tx.type === 'Add' ? 'badge-error badge-outline' : 'badge-success badge-outline'}`}>
+                  <div className="flex justify-end items-center mt-2 pt-3 border-t border-error/10">
+                    <div className={`badge badge-sm border-error/40 ${tx.type === 'Add' ? 'text-error' : 'text-success'}`}>
                       {tx.type === 'Add' ? 'Added' : 'Infaq'}
                     </div>
                   </div>

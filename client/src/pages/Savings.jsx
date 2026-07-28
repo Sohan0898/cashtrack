@@ -241,62 +241,15 @@ const Savings = () => {
         </div>
         
         <div className="overflow-x-auto custom-scrollbar max-h-[500px]">
-          <table className="table w-full hidden md:table">
-            <thead className="bg-base-200/50 sticky top-0 z-10 backdrop-blur-md">
-              <tr>
-                <th>Date</th>
-                <th>Account</th>
-                <th>Type</th>
-                <th className="text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isHistoryLoading ? (
-                <tr>
-                  <td colSpan="4" className="text-center py-8">
-                    <span className="loading loading-spinner text-accent"></span>
-                  </td>
-                </tr>
-              ) : history?.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="text-center py-8 text-base-content/50">
-                    No saving history found.
-                  </td>
-                </tr>
-              ) : (
-                history?.map((tx) => (
-                  <tr key={tx._id} className="hover:bg-base-200/30 transition-colors">
-                    <td>
-                      <div className="font-medium">{format(new Date(tx.date), 'dd MMM, yyyy')}</div>
-                      <div className="text-xs text-base-content/50">{format(new Date(tx.date), 'hh:mm a')}</div>
-                    </td>
-                    <td>
-                      <div className="font-medium">{tx.savingsAccount?.accountName || 'Deleted Account'}</div>
-                      <div className="text-xs opacity-60">{tx.savingsAccount?.type || ''}</div>
-                    </td>
-                    <td>
-                      <div className={`badge badge-sm ${tx.type === 'Deposit' ? 'badge-success badge-outline' : 'badge-error badge-outline'}`}>
-                        {tx.type}
-                      </div>
-                    </td>
-                    <td className={`text-right font-medium ${tx.type === 'Deposit' ? 'text-success' : 'text-error'}`}>
-                      {tx.type === 'Deposit' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-          {/* Mobile Cards */}
-          <div className="md:hidden flex flex-col gap-3 p-4">
+          {/* Cards layout for all devices */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             {isHistoryLoading ? (
-              <div className="text-center py-8"><span className="loading loading-spinner text-accent"></span></div>
+              <div className="col-span-full text-center py-8"><span className="loading loading-spinner text-accent"></span></div>
             ) : history?.length === 0 ? (
-              <div className="text-center py-8 text-base-content/50">No saving history found.</div>
+              <div className="col-span-full text-center py-8 text-base-content/50">No saving history found.</div>
             ) : (
               history?.map((tx) => (
-                <div key={tx._id} className="bg-success/10 p-4 rounded-xl border border-success/20">
+                <div key={tx._id} className="bg-accent/20 p-4 rounded-xl border border-accent/30 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h4 className="font-bold text-base">{tx.savingsAccount?.accountName || 'Deleted Account'}</h4>
@@ -308,9 +261,9 @@ const Savings = () => {
                       {tx.type === 'Deposit' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-base-300">
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-accent/10">
                     <span className="text-xs text-base-content/60">{tx.savingsAccount?.type || 'Unknown Type'}</span>
-                    <div className={`badge badge-sm ${tx.type === 'Deposit' ? 'badge-success badge-outline' : 'badge-error badge-outline'}`}>
+                    <div className={`badge badge-sm border-accent/40 ${tx.type === 'Deposit' ? 'text-success' : 'text-error'}`}>
                       {tx.type}
                     </div>
                   </div>
