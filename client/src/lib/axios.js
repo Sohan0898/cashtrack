@@ -12,7 +12,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      if (window.location.pathname !== '/login') {
+      const publicPaths = ['/', '/login', '/features', '/pricing', '/about', '/currency-converter'];
+      if (!publicPaths.includes(window.location.pathname)) {
         localStorage.removeItem('cashtrack_token');
         window.location.href = '/login';
       }
