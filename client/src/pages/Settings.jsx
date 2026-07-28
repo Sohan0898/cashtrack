@@ -116,12 +116,19 @@ const Settings = () => {
 
   const subscribeUserToPush = async () => {
     if (!('serviceWorker' in navigator)) return;
+    
+    const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+    if (!vapidKey) {
+      toast.error('Push notifications are not configured on the server.');
+      return;
+    }
+
     try {
       setIsSubscribing(true);
       const registration = await navigator.serviceWorker.ready;
       const subscribeOptions = {
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY)
+        applicationServerKey: urlBase64ToUint8Array(vapidKey)
       };
       
       let subscription = await registration.pushManager.getSubscription();

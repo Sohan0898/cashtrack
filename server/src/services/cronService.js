@@ -6,11 +6,15 @@ import Income from '../models/Income.js';
 import Expense from '../models/Expense.js';
 
 export const initCronJobs = () => {
-  webpush.setVapidDetails(
-    'mailto:support@cashtrack.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-  );
+  if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+      'mailto:support@cashtrack.com',
+      process.env.VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
+    );
+  } else {
+    console.warn('[Cron] VAPID keys not found in environment. Push notifications are disabled.');
+  }
 
   // Run at the top of every hour
   cron.schedule('0 * * * *', async () => {
