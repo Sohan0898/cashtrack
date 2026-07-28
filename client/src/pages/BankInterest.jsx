@@ -173,7 +173,6 @@ const BankInterest = () => {
                 </div>
               ))
             )}
-          </div>
         </div>
       </div>
     </div>
