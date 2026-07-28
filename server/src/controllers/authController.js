@@ -163,6 +163,36 @@ export const clearData = async (req, res) => {
   }
 };
 
+// @desc    Backup all user data
+// @route   GET /api/auth/backup
+// @access  Private
+export const backupData = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-firebaseUid');
+    const incomes = await Income.find({ user: req.user._id });
+    const expenses = await Expense.find({ user: req.user._id });
+    const savings = await Savings.find({ user: req.user._id });
+    const savingsHistory = await SavingsHistory.find({ user: req.user._id });
+    const bankInterest = await BankInterest.find({ user: req.user._id });
+    const categories = await Category.find({ user: req.user._id });
+
+    const backup = {
+      user,
+      incomes,
+      expenses,
+      savings,
+      savingsHistory,
+      bankInterest,
+      categories,
+      timestamp: new Date()
+    };
+
+    res.json(backup);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to generate backup' });
+  }
+};
+
 // @desc    Delete user account and all associated data
 // @route   DELETE /api/auth/account
 // @access  Private
