@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore';
 import { formatCurrency } from '../lib/currency';
 import api from '../lib/axios';
-import { PiggyBank, Plus, Trash2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { PiggyBank, Plus, Trash2, ArrowUpCircle, ArrowDownCircle, History } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { format } from 'date-fns';
 
 const Savings = () => {
   const { t } = useTranslation();
@@ -24,6 +25,16 @@ const Savings = () => {
       return res.data;
     }
   });
+
+  const { data: history, isLoading: isHistoryLoading } = useQuery({
+    queryKey: ['savingsHistoryAll'],
+    queryFn: async () => {
+      const res = await api.get('/savings/history/all');
+      return res.data;
+    }
+  });
+
+  const totalSavings = savings?.reduce((sum, acc) => sum + acc.balance, 0) || 0;
 
   const createMutation = useMutation({
     mutationFn: (data) => api.post('/savings', data),
@@ -49,6 +60,7 @@ const Savings = () => {
     mutationFn: ({ id, data }) => api.post(`/savings/${id}/transaction`, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['savings']);
+      queryClient.invalidateQueries(['savingsHistoryAll']);
       queryClient.invalidateQueries(['dashboard']);
       toast.success('Transaction successful');
       setTxData({ accountId: null, type: 'Deposit', amount: '' });
@@ -85,7 +97,7 @@ const Savings = () => {
       </div>
 
       {isAdding && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 mb-6">
           <h3 className="font-semibold mb-4">Create New Account</h3>
           <form onSubmit={handleCreate} className="flex flex-col md:flex-row gap-4 items-end">
             <div className="form-control w-full md:w-auto">
@@ -106,6 +118,13 @@ const Savings = () => {
           </form>
         </motion.div>
       )}
+
+      <div className="glass-card p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-accent/10 to-transparent border-l-4 border-l-accent mb-6">
+        <div>
+          <h3 className="text-base-content/60 font-medium">Total Savings</h3>
+          <h1 className="text-4xl font-bold text-accent">{formatCurrency(totalSavings, user?.currency)}</h1>
+        </div>
+      </div>
 
       {txData.accountId && (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -165,6 +184,64 @@ const Savings = () => {
             </motion.div>
           ))
         )}
+      </div>
+
+      <div className="glass-card mt-8 p-0 overflow-hidden flex flex-col">
+        <div className="p-6 border-b border-base-200/50 bg-base-200/20">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <History className="w-5 h-5 text-accent" />
+            Savings History
+          </h3>
+        </div>
+        
+        <div className="overflow-x-auto custom-scrollbar max-h-[500px]">
+          <table className="table w-full">
+            <thead className="bg-base-200/50 sticky top-0 z-10 backdrop-blur-md">
+              <tr>
+                <th>Date</th>
+                <th>Account</th>
+                <th>Type</th>
+                <th className="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isHistoryLoading ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-8">
+                    <span className="loading loading-spinner text-accent"></span>
+                  </td>
+                </tr>
+              ) : history?.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-8 text-base-content/50">
+                    No saving history found.
+                  </td>
+                </tr>
+              ) : (
+                history?.map((tx) => (
+                  <tr key={tx._id} className="hover:bg-base-200/30 transition-colors">
+                    <td>
+                      <div className="font-medium">{format(new Date(tx.date), 'dd MMM, yyyy')}</div>
+                      <div className="text-xs text-base-content/50">{format(new Date(tx.date), 'hh:mm a')}</div>
+                    </td>
+                    <td>
+                      <div className="font-medium">{tx.savingsAccount?.accountName || 'Deleted Account'}</div>
+                      <div className="text-xs opacity-60">{tx.savingsAccount?.type || ''}</div>
+                    </td>
+                    <td>
+                      <div className={`badge badge-sm ${tx.type === 'Deposit' ? 'badge-success badge-outline' : 'badge-error badge-outline'}`}>
+                        {tx.type}
+                      </div>
+                    </td>
+                    <td className={`text-right font-medium ${tx.type === 'Deposit' ? 'text-success' : 'text-error'}`}>
+                      {tx.type === 'Deposit' ? '+' : '-'}{formatCurrency(tx.amount, user?.currency)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

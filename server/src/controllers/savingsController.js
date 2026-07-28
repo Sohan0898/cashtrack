@@ -110,3 +110,17 @@ export const getSavingsHistory = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get all saving histories for a user
+// @route   GET /api/savings/history/all
+// @access  Private
+export const getAllSavingsHistory = async (req, res) => {
+  try {
+    const history = await SavingsHistory.find({ user: req.user._id })
+      .populate('savingsAccount', 'accountName type')
+      .sort({ date: -1 });
+    res.json(history);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
