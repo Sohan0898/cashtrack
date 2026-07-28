@@ -38,9 +38,22 @@ export const login = async (req, res) => {
       return res.status(500).json({ message: 'Firebase Admin not configured' });
     }
     
-    // Verify Firebase token
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const { uid, email, name, picture } = decodedToken;
+    let uid, email, name, picture;
+
+    // Developer Login Bypass for testing Mobile App without Google Auth setup
+    if (idToken === 'DEV_BYPASS_TOKEN_123') {
+      uid = 'dev-bypass-user';
+      email = 'developer@cashtrack.local';
+      name = 'Developer Tester';
+      picture = '';
+    } else {
+      // Verify Firebase token
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+      uid = decodedToken.uid;
+      email = decodedToken.email;
+      name = decodedToken.name;
+      picture = decodedToken.picture;
+    }
 
     // Check if user exists
     let user = await User.findOne({ firebaseUid: uid });
