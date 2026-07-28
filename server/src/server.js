@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 
 import connectDB from './config/db.js';
+import { initCronJobs } from './services/cronService.js';
 
 import authRoutes from './routes/authRoutes.js';
 import incomeRoutes from './routes/incomeRoutes.js';
@@ -14,12 +15,16 @@ import savingsRoutes from './routes/savingsRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import interestRoutes from './routes/interestRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 // Load env vars
 dotenv.config();
 
 // Connect to database
 connectDB();
+
+// Initialize scheduled tasks (cron)
+initCronJobs();
 
 const app = express();
 
@@ -59,6 +64,7 @@ app.use('/api/savings', savingsRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/interest', interestRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
   res.send('CashTrack API is running...');

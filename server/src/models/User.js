@@ -13,6 +13,13 @@ const userSchema = new mongoose.Schema(
     lastLogin: { type: Date },
     lastLoginIp: { type: String },
     lastLoginDevice: { type: String },
+    timezone: { type: String, default: 'UTC' },
+    notificationPreferences: {
+      daily: { type: Boolean, default: false },
+      weekly: { type: Boolean, default: false },
+      monthly: { type: Boolean, default: false }
+    },
+    pushSubscriptions: { type: Array, default: [] },
   },
   { timestamps: true }
 );
