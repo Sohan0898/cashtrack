@@ -59,7 +59,7 @@ export default function RestoreBackup() {
   const handleBackup = async () => {
     setIsExportingJSON(true);
     try {
-      const res = await api.get(`/analytics/reports?fetchAll=true`);
+      const res = await api.get(`/auth/backup`);
       const data = res.data;
       
       const json = JSON.stringify(data, null, 2);
@@ -81,7 +81,7 @@ export default function RestoreBackup() {
   const handleGoogleBackup = async () => {
     setIsGoogleSyncing(true);
     try {
-      const res = await api.get(`/analytics/reports?fetchAll=true`);
+      const res = await api.get(`/auth/backup`);
       const backupData = res.data;
       
       // Save backup snapshot to localStorage & simulate cloud sync
@@ -195,6 +195,51 @@ export default function RestoreBackup() {
         }
       }
 
+      if (data.bankInterest && Array.isArray(data.bankInterest)) {
+        for (const interest of data.bankInterest) {
+          try {
+            await api.post('/interest', {
+              date: interest.date || new Date().toISOString(),
+              amount: Number(interest.amount) || 0,
+              bankName: interest.bankName || 'Unknown Bank',
+              type: interest.type || 'Bank Interest'
+            });
+            importedCount++;
+          } catch (err) {
+            console.error('Failed to restore bank interest:', err);
+          }
+        }
+      }
+
+      if (data.categories && Array.isArray(data.categories)) {
+        for (const cat of data.categories) {
+          try {
+            await api.post('/categories', {
+              name: cat.name,
+              type: cat.type,
+              color: cat.color,
+              icon: cat.icon
+            });
+            importedCount++;
+          } catch (err) {
+            console.error('Failed to restore category:', err);
+          }
+        }
+      }
+
+      if (data.user) {
+        try {
+          await api.put('/auth/profile', {
+            currency: data.user.currency,
+            language: data.user.language,
+            theme: data.user.theme
+          });
+          importedCount++;
+        } catch (err) {
+          console.error('Failed to restore user settings:', err);
+        }
+      }
+
       if (importedCount > 0) {
         toast.success(`Restored ${importedCount} records from Google Cloud Backup!`);
       } else {
@@ -294,6 +339,48 @@ export default function RestoreBackup() {
               } catch (err) {
                 console.error('Failed to restore savings account:', err);
               }
+            }
+          }
+          if (parsed.bankInterest && Array.isArray(parsed.bankInterest)) {
+            for (const interest of parsed.bankInterest) {
+              try {
+                await api.post('/interest', {
+                  date: interest.date || new Date().toISOString(),
+                  amount: Number(interest.amount) || 0,
+                  bankName: interest.bankName || 'Unknown Bank',
+                  type: interest.type || 'Bank Interest'
+                });
+                count++;
+              } catch (err) {
+                console.error(err);
+              }
+            }
+          }
+          if (parsed.categories && Array.isArray(parsed.categories)) {
+            for (const cat of parsed.categories) {
+              try {
+                await api.post('/categories', {
+                  name: cat.name,
+                  type: cat.type,
+                  color: cat.color,
+                  icon: cat.icon
+                });
+                count++;
+              } catch (err) {
+                console.error(err);
+              }
+            }
+          }
+          if (parsed.user) {
+            try {
+              await api.put('/auth/profile', {
+                currency: parsed.user.currency,
+                language: parsed.user.language,
+                theme: parsed.user.theme
+              });
+              count++;
+            } catch (err) {
+              console.error(err);
             }
           }
         } else if (file.name.endsWith('.csv')) {

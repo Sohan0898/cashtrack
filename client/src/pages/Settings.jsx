@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle, Download } from 'lucide-react';
+import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '../lib/i18n';
@@ -14,26 +13,6 @@ const Settings = () => {
   const [language, setLanguage] = useState(user?.language || 'en');
   const [isSaving, setIsSaving] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
-  const [isBackingUp, setIsBackingUp] = useState(false);
-
-  const handleBackupData = async () => {
-    setIsBackingUp(true);
-    try {
-      const res = await api.get('/auth/backup');
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(res.data, null, 2));
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", `cashtrack_backup_${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(downloadAnchorNode);
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
-      toast.success('Backup downloaded successfully');
-    } catch (error) {
-      toast.error('Failed to download backup');
-    } finally {
-      setIsBackingUp(false);
-    }
-  };
 
   const handleClearData = async () => {
     setIsClearing(true);
@@ -117,20 +96,6 @@ const Settings = () => {
           </h3>
           
           <div className="space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-info/5 border border-info/20 rounded-xl gap-4">
-              <div>
-                <h4 className="font-semibold text-info">Backup Data</h4>
-                <p className="text-sm text-base-content/70">Download a complete backup of all your transactions, settings, savings, and bank interest in JSON format.</p>
-              </div>
-              <button 
-                className="btn btn-info btn-outline whitespace-nowrap"
-                onClick={handleBackupData}
-                disabled={isBackingUp}
-              >
-                {isBackingUp ? <span className="loading loading-spinner"></span> : <><Download className="w-4 h-4"/> Backup Data</>}
-              </button>
-            </div>
-
             <div className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-error/5 border border-error/20 rounded-xl gap-4">
               <div>
                 <h4 className="font-semibold text-error">Clear All Data</h4>

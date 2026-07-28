@@ -180,8 +180,8 @@ export const backupData = async (req, res) => {
       user,
       incomes,
       expenses,
-      savings,
-      savingsHistory,
+      savingsAccounts: savings,
+      savingsHistories: savingsHistory,
       bankInterest,
       categories,
       timestamp: new Date()
