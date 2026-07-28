@@ -15,6 +15,7 @@ import Income from './pages/Income';
 import Expenses from './pages/Expenses';
 import Savings from './pages/Savings';
 import Reports from './pages/Reports';
+import BankInterest from './pages/BankInterest';
 import RestoreBackup from './pages/RestoreBackup';
 import Settings from './pages/Settings';
 import ManageAccount from './pages/ManageAccount';
@@ -63,6 +64,7 @@ function App() {
           <Route path="/income" element={<Income />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/savings" element={<Savings />} />
+          <Route path="/interest" element={<BankInterest />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/backup" element={<RestoreBackup />} />
           <Route path="/settings" element={<Settings />} />

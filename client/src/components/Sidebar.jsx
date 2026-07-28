@@ -1,5 +1,5 @@
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, PiggyBank, PieChart, Settings, X, Wallet, Database, Home } from 'lucide-react';
+import { LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, PiggyBank, PieChart, Settings, X, Wallet, Database, Home, Landmark } from 'lucide-react';
 
 import useAuthStore from '../store/authStore';
 
@@ -12,6 +12,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     { name: 'Income', path: '/income', icon: ArrowDownToLine },
     { name: 'Expenses', path: '/expenses', icon: ArrowUpFromLine },
     { name: 'Savings', path: '/savings', icon: PiggyBank },
+    { name: 'Bank Interest', path: '/interest', icon: Landmark },
     { name: 'Reports', path: '/reports', icon: PieChart },
     { name: 'Restore & Backup', path: '/backup', icon: Database },
     { name: 'Settings', path: '/settings', icon: Settings },
