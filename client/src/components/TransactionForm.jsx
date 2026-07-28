@@ -35,8 +35,8 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
       channel: initialData.channel,
       description: initialData.description || ''
     } : {
-      date: new Date().toISOString().split('T')[0],
-      time: new Date().toTimeString().split(' ')[0].slice(0, 5),
+      date: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`,
+      time: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`,
       channel: 'Bank'
     }
   });
