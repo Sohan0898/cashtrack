@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,16 @@ const Settings = () => {
   const [language, setLanguage] = useState(user?.language || 'en');
   const [isSaving, setIsSaving] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [currentIp, setCurrentIp] = useState('Fetching...');
+  const [currentDevice, setCurrentDevice] = useState('Fetching...');
+
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => setCurrentIp(data.ip))
+      .catch(() => setCurrentIp(user?.lastLoginIp || 'Unavailable'));
+    setCurrentDevice(navigator.userAgent);
+  }, [user?.lastLoginIp]);
 
   const handleClearData = async () => {
     setIsClearing(true);
@@ -93,20 +103,20 @@ const Settings = () => {
         {/* Security / Login Info */}
         <div className="mt-8 pt-8 border-t border-base-200">
           <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-            <ShieldAlert className="w-5 h-5 text-info" /> Security & Login Info
+            <ShieldAlert className="w-5 h-5 text-info" /> Security & Session Info
           </h3>
           <div className="bg-base-200/50 rounded-xl p-4 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 pb-3">
               <span className="text-base-content/70 text-sm font-medium">Last Login</span>
-              <span className="font-semibold">{user?.lastLogin ? new Date(user.lastLogin).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A'}</span>
+              <span className="font-semibold">{user?.lastLogin ? new Date(user.lastLogin).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : 'Current Session'}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-base-300 pb-3">
-              <span className="text-base-content/70 text-sm font-medium">IP Address</span>
-              <span className="font-mono text-sm bg-base-300 px-2 py-1 rounded">{user?.lastLoginIp || 'N/A'}</span>
+              <span className="text-base-content/70 text-sm font-medium">Current IP Address</span>
+              <span className="font-mono text-sm bg-base-300 px-2 py-1 rounded">{currentIp}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-              <span className="text-base-content/70 text-sm font-medium">Device</span>
-              <span className="font-medium text-xs sm:max-w-xs text-left sm:text-right break-all" title={user?.lastLoginDevice}>{user?.lastLoginDevice || 'N/A'}</span>
+              <span className="text-base-content/70 text-sm font-medium">Current Device</span>
+              <span className="font-medium text-xs sm:max-w-xs text-left sm:text-right break-all" title={currentDevice}>{currentDevice}</span>
             </div>
           </div>
         </div>
