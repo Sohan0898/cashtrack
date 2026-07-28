@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore';
 import { formatCurrency } from '../lib/currency';
 import api from '../lib/axios';
-import { Landmark, Plus, HeartHandshake, History } from 'lucide-react';
+import { Landmark, Plus, HeartHandshake, History, Trash2, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -42,6 +42,19 @@ const BankInterest = () => {
     }
   });
 
+  const clearMutation = useMutation({
+    mutationFn: () => api.delete('/interest/clear'),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['interest']);
+      toast.success('All interest data cleared');
+      document.getElementById('clear_interest_modal').close();
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to clear data');
+      document.getElementById('clear_interest_modal').close();
+    }
+  });
+
   const handleInterestTx = (e) => {
     e.preventDefault();
     if (!interestTx.amount || interestTx.amount <= 0) return toast.error('Valid amount required');
@@ -51,12 +64,39 @@ const BankInterest = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-error/20 text-error rounded-xl">
-          <Landmark className="w-6 h-6" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-error/20 text-error rounded-xl">
+            <Landmark className="w-6 h-6" />
+          </div>
+          <h2 className="text-2xl font-bold">{t('Bank Interest')}</h2>
         </div>
-        <h2 className="text-2xl font-bold">{t('Bank Interest')}</h2>
+        <button 
+          className="btn btn-sm btn-ghost text-error" 
+          onClick={() => document.getElementById('clear_interest_modal').showModal()}
+        >
+          <Trash2 className="w-4 h-4" /> Clear Data
+        </button>
       </div>
+
+      <dialog id="clear_interest_modal" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg flex items-center gap-2 text-error">
+            <AlertTriangle className="w-5 h-5" />
+            Warning: Clear All Data
+          </h3>
+          <p className="py-4">Are you sure you want to delete ALL your bank interest and infaq history? This action cannot be undone.</p>
+          <div className="modal-action">
+            <button type="button" className="btn btn-ghost" onClick={() => document.getElementById('clear_interest_modal').close()}>Cancel</button>
+            <button type="button" className="btn bg-error text-error-content hover:bg-error/90 border-none" onClick={() => clearMutation.mutate()} disabled={clearMutation.isPending}>
+              {clearMutation.isPending ? <span className="loading loading-spinner"></span> : 'Yes, Delete All'}
+            </button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
 
       <div className="glass-card p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-error/10 to-transparent border-l-4 border-l-error mb-6">
         <div>
