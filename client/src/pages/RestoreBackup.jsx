@@ -126,8 +126,16 @@ export default function RestoreBackup() {
     try {
       let savedSnapshot = localStorage.getItem(getSnapshotKey());
       if (!savedSnapshot) {
-        // Fallback for older backups
-        savedSnapshot = localStorage.getItem('google_cloud_backup_snapshot');
+        // Fallback for older backups, but ONLY if the backup belongs to the current user
+        const legacySnapshot = localStorage.getItem('google_cloud_backup_snapshot');
+        if (legacySnapshot) {
+          try {
+            const parsedLegacy = JSON.parse(legacySnapshot);
+            if (parsedLegacy.user && parsedLegacy.user._id === user?._id) {
+              savedSnapshot = legacySnapshot;
+            }
+          } catch(e) {}
+        }
       }
       
       if (!savedSnapshot) {
