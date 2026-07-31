@@ -9,7 +9,8 @@ import SavingsHistory from '../models/SavingsHistory.js';
 export const getDashboardStats = async (req, res) => {
   try {
     const userId = req.user._id;
-    const tzOffset = req.query.tzOffset ? parseInt(req.query.tzOffset) : new Date().getTimezoneOffset();
+    // Default to Bangladesh timezone (-360 minutes offset) if not provided by client
+    const tzOffset = req.query.tzOffset ? parseInt(req.query.tzOffset) : -360;
 
     // Dates for current and previous month calculations in user's timezone
     const utcNow = new Date();
@@ -105,7 +106,8 @@ export const getReportsData = async (req, res) => {
     const { startDate, endDate, month, year, tzOffset: tzOffsetStr } = req.query;
     const userId = req.user._id;
 
-    const tzOffset = tzOffsetStr ? parseInt(tzOffsetStr) : new Date().getTimezoneOffset();
+    // Default to Bangladesh timezone (-360 minutes offset) if not provided by client
+    const tzOffset = tzOffsetStr ? parseInt(tzOffsetStr) : -360;
     const userLocalNow = new Date(new Date().getTime() - (tzOffset * 60000));
     
     const targetMonth = month !== undefined ? parseInt(month) : userLocalNow.getUTCMonth();
