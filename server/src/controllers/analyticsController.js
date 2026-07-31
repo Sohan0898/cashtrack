@@ -9,13 +9,20 @@ import SavingsHistory from '../models/SavingsHistory.js';
 export const getDashboardStats = async (req, res) => {
   try {
     const userId = req.user._id;
+    const tzOffset = req.query.tzOffset ? parseInt(req.query.tzOffset) : new Date().getTimezoneOffset();
 
-    // Dates for current and previous month calculations
-    const now = new Date();
-    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // Dates for current and previous month calculations in user's timezone
+    const utcNow = new Date();
+    const userLocalNow = new Date(utcNow.getTime() - (tzOffset * 60000));
+    
+    const localYear = userLocalNow.getUTCFullYear();
+    const localMonth = userLocalNow.getUTCMonth();
+    const localDate = userLocalNow.getUTCDate();
+
+    const startOfCurrentMonth = new Date(Date.UTC(localYear, localMonth, 1) + (tzOffset * 60000));
+    const startOfPrevMonth = new Date(Date.UTC(localYear, localMonth - 1, 1) + (tzOffset * 60000));
+    const endOfPrevMonth = new Date(Date.UTC(localYear, localMonth, 0, 23, 59, 59, 999) + (tzOffset * 60000));
+    const startOfToday = new Date(Date.UTC(localYear, localMonth, localDate) + (tzOffset * 60000));
 
     const incomes = await Income.find({ user: userId }).lean();
     const expenses = await Expense.find({ user: userId }).lean();
@@ -57,12 +64,14 @@ export const getDashboardStats = async (req, res) => {
 
     // Chart Data (Last 30 days cash flow)
     const chartData = [];
+    const getLocalString = (dateObj) => new Date(new Date(dateObj).getTime() - (tzOffset * 60000)).toISOString().split('T')[0];
+
     for (let i = 29; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const d = new Date(Date.UTC(localYear, localMonth, localDate - i));
       const dateStr = d.toISOString().split('T')[0];
       
-      const dayIncomes = incomes.filter(inc => new Date(inc.date).toISOString().split('T')[0] === dateStr).reduce((a, b) => a + b.amount, 0);
-      const dayExpenses = expenses.filter(exp => new Date(exp.date).toISOString().split('T')[0] === dateStr).reduce((a, b) => a + b.amount, 0);
+      const dayIncomes = incomes.filter(inc => getLocalString(inc.date) === dateStr).reduce((a, b) => a + b.amount, 0);
+      const dayExpenses = expenses.filter(exp => getLocalString(exp.date) === dateStr).reduce((a, b) => a + b.amount, 0);
 
       chartData.push({
         date: dateStr,
@@ -93,17 +102,20 @@ export const getDashboardStats = async (req, res) => {
 // @access  Private
 export const getReportsData = async (req, res) => {
   try {
-    const { startDate, endDate, month, year } = req.query;
+    const { startDate, endDate, month, year, tzOffset: tzOffsetStr } = req.query;
     const userId = req.user._id;
 
-    const targetMonth = month !== undefined ? parseInt(month) : new Date().getMonth();
-    const targetYear = year !== undefined ? parseInt(year) : new Date().getFullYear();
-
-    const startOfTargetMonth = new Date(targetYear, targetMonth, 1);
-    const endOfTargetMonth = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999);
+    const tzOffset = tzOffsetStr ? parseInt(tzOffsetStr) : new Date().getTimezoneOffset();
+    const userLocalNow = new Date(new Date().getTime() - (tzOffset * 60000));
     
-    const startOfTargetYear = new Date(targetYear, 0, 1);
-    const endOfTargetYear = new Date(targetYear, 11, 31, 23, 59, 59, 999);
+    const targetMonth = month !== undefined ? parseInt(month) : userLocalNow.getUTCMonth();
+    const targetYear = year !== undefined ? parseInt(year) : userLocalNow.getUTCFullYear();
+
+    const startOfTargetMonth = new Date(Date.UTC(targetYear, targetMonth, 1) + (tzOffset * 60000));
+    const endOfTargetMonth = new Date(Date.UTC(targetYear, targetMonth + 1, 0, 23, 59, 59, 999) + (tzOffset * 60000));
+    
+    const startOfTargetYear = new Date(Date.UTC(targetYear, 0, 1) + (tzOffset * 60000));
+    const endOfTargetYear = new Date(Date.UTC(targetYear, 11, 31, 23, 59, 59, 999) + (tzOffset * 60000));
 
     let dateFilter = {};
     if (req.query.fetchAll === 'true') {

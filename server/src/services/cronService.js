@@ -1,9 +1,12 @@
 import cron from 'node-cron';
 import { DateTime } from 'luxon';
 import webpush from 'web-push';
+import { Expo } from 'expo-server-sdk';
 import User from '../models/User.js';
 import Income from '../models/Income.js';
 import Expense from '../models/Expense.js';
+
+const expo = new Expo();
 
 export const initCronJobs = () => {
   if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
@@ -22,7 +25,10 @@ export const initCronJobs = () => {
     
     try {
       const users = await User.find({
-        pushSubscriptions: { $exists: true, $not: { $size: 0 } }
+        $or: [
+          { pushSubscriptions: { $exists: true, $not: { $size: 0 } } },
+          { expoPushTokens: { $exists: true, $not: { $size: 0 } } }
+        ]
       });
 
       for (const user of users) {
@@ -75,25 +81,58 @@ export const initCronJobs = () => {
 const sendPush = async (user, payload) => {
   const activeSubs = [];
   let subscriptionRemoved = false;
+  let parsedPayload;
+  try {
+    parsedPayload = JSON.parse(payload);
+  } catch (e) {
+    parsedPayload = { title: 'Notification', body: payload };
+  }
 
-  for (const sub of user.pushSubscriptions) {
-    try {
-      await webpush.sendNotification(sub, payload);
-      activeSubs.push(sub);
-    } catch (error) {
-      if (error.statusCode === 404 || error.statusCode === 410) {
-        console.log(`[Cron] Subscription expired for user ${user._id}`);
-        subscriptionRemoved = true;
-      } else {
-        console.error(`[Cron] Push error for user ${user._id}:`, error);
-        activeSubs.push(sub); // Keep it if it's not a 404/410
+  // Web Push
+  if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
+    for (const sub of user.pushSubscriptions) {
+      try {
+        await webpush.sendNotification(sub, payload);
+        activeSubs.push(sub);
+      } catch (error) {
+        if (error.statusCode === 404 || error.statusCode === 410) {
+          console.log(`[Cron] Subscription expired for user ${user._id}`);
+          subscriptionRemoved = true;
+        } else {
+          console.error(`[Cron] Push error for user ${user._id}:`, error);
+          activeSubs.push(sub); // Keep it if it's not a 404/410
+        }
       }
+    }
+
+    if (subscriptionRemoved) {
+      user.pushSubscriptions = activeSubs;
+      await user.save();
     }
   }
 
-  if (subscriptionRemoved) {
-    user.pushSubscriptions = activeSubs;
-    await user.save();
+  // Expo Push for Mobile
+  if (user.expoPushTokens && user.expoPushTokens.length > 0) {
+    const messages = [];
+    for (const pushToken of user.expoPushTokens) {
+      if (!Expo.isExpoPushToken(pushToken)) continue;
+      messages.push({
+        to: pushToken,
+        sound: 'default',
+        title: parsedPayload.title,
+        body: parsedPayload.body,
+        data: { url: parsedPayload.url },
+      });
+    }
+
+    const chunks = expo.chunkPushNotifications(messages);
+    for (const chunk of chunks) {
+      try {
+        await expo.sendPushNotificationsAsync(chunk);
+      } catch (error) {
+        console.error(`[Cron] Expo Push error for user ${user._id}:`, error);
+      }
+    }
   }
 };
 

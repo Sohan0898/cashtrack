@@ -16,7 +16,8 @@ const Dashboard = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: async () => {
-      const res = await api.get('/analytics/dashboard');
+      const tzOffset = new Date().getTimezoneOffset();
+      const res = await api.get(`/analytics/dashboard?tzOffset=${tzOffset}`);
       return res.data;
     }
   });

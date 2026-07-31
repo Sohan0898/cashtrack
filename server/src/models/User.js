@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
       monthly: { type: Boolean, default: false }
     },
     pushSubscriptions: { type: Array, default: [] },
+    expoPushTokens: [{ type: String }],
   },
   { timestamps: true }
 );

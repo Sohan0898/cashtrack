@@ -28,7 +28,8 @@ const Reports = () => {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['reports', selectedMonth, selectedYear],
     queryFn: async () => {
-      const res = await api.get(`/analytics/reports?month=${selectedMonth}&year=${selectedYear}`);
+      const tzOffset = new Date().getTimezoneOffset();
+      const res = await api.get(`/analytics/reports?month=${selectedMonth}&year=${selectedYear}&tzOffset=${tzOffset}`);
       return res.data;
     },
     placeholderData: keepPreviousData
