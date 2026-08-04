@@ -150,11 +150,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
           {errors.date && <span className="text-error text-xs mt-1">{errors.date.message}</span>}
         </div>
 
-        <div className="form-control">
-          <label className="label"><span className="label-text text-xs sm:text-sm">Time</span></label>
-          <input type="time" className={`input input-bordered input-sm sm:input-md text-sm px-2 sm:px-4 ${errors.time ? 'input-error' : ''}`} {...register('time')} />
-          {errors.time && <span className="text-error text-xs mt-1">{errors.time.message}</span>}
-        </div>
+        <input type="hidden" {...register('time')} />
       </div>
 
       <div className="form-control">
