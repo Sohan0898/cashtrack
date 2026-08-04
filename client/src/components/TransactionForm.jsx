@@ -104,7 +104,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
         <div className="form-control">
           <label className="label"><span className="label-text text-xs sm:text-sm">Title</span></label>
           <input type="text" className={`input input-bordered input-sm sm:input-md text-sm ${errors.title ? 'input-error' : ''}`} {...register('title')} placeholder={type === 'income' ? 'e.g. Salary' : 'e.g. Bill'} />
@@ -144,7 +144,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
           {errors.channel && <span className="text-error text-xs mt-1">{errors.channel.message}</span>}
         </div>
 
-        <div className="form-control">
+        <div className="form-control col-span-2 sm:col-span-2">
           <label className="label"><span className="label-text text-xs sm:text-sm">Date</span></label>
           <input type="date" className={`input input-bordered input-sm sm:input-md text-sm px-2 sm:px-4 ${errors.date ? 'input-error' : ''}`} {...register('date')} />
           {errors.date && <span className="text-error text-xs mt-1">{errors.date.message}</span>}
