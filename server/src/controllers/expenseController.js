@@ -17,7 +17,7 @@ export const getExpenses = async (req, res) => {
 // @access  Private
 export const createExpense = async (req, res) => {
   try {
-    const { title, amount, category, date, time, channel, description } = req.body;
+    const { title, amount, category, date, channel, description } = req.body;
 
     const expense = new Expense({
       user: req.user._id,
@@ -25,7 +25,7 @@ export const createExpense = async (req, res) => {
       amount,
       category,
       date,
-      time,
+
       channel,
       description,
     });
@@ -49,7 +49,7 @@ export const updateExpense = async (req, res) => {
       expense.amount = req.body.amount || expense.amount;
       expense.category = req.body.category || expense.category;
       expense.date = req.body.date || expense.date;
-      expense.time = req.body.time || expense.time;
+
       expense.channel = req.body.channel || expense.channel;
       expense.description = req.body.description !== undefined ? req.body.description : expense.description;
 

@@ -59,13 +59,7 @@ const Income = () => {
     return `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })}, ${date.getFullYear()}`;
   };
 
-  const formatTime = (timeStr) => {
-    if (!timeStr) return '';
-    const [h, m] = timeStr.split(':');
-    const d = new Date();
-    d.setHours(h, m, 0);
-    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-  };
+
 
   return (
     <div className="space-y-6">

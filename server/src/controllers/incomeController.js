@@ -18,7 +18,7 @@ export const getIncomes = async (req, res) => {
 // @access  Private
 export const createIncome = async (req, res) => {
   try {
-    const { title, amount, category, date, time, channel, description } = req.body;
+    const { title, amount, category, date, channel, description } = req.body;
 
     const income = new Income({
       user: req.user._id,
@@ -26,7 +26,7 @@ export const createIncome = async (req, res) => {
       amount,
       category,
       date,
-      time,
+
       channel,
       description,
     });
@@ -54,7 +54,7 @@ export const updateIncome = async (req, res) => {
       income.amount = req.body.amount || income.amount;
       income.category = req.body.category || income.category;
       income.date = req.body.date || income.date;
-      income.time = req.body.time || income.time;
+
       income.channel = req.body.channel || income.channel;
       income.description = req.body.description !== undefined ? req.body.description : income.description;
 

@@ -12,7 +12,6 @@ const transactionSchema = z.object({
   amount: z.number().min(0.01, 'Amount must be greater than 0'),
   category: z.string().min(1, 'Category is required'),
   date: z.string().min(1, 'Date is required'),
-  time: z.string().min(1, 'Time is required'),
   channel: z.enum(['Bank', 'Cash', 'Bkash', 'Rocket', 'Nagad', 'Upay', 'Card', 'Virtual Card']),
   description: z.string().optional(),
 });
@@ -31,12 +30,10 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
       amount: initialData.amount,
       category: initialData.category,
       date: initialData.date.split('T')[0],
-      time: initialData.time,
       channel: initialData.channel,
       description: initialData.description || ''
     } : {
       date: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`,
-      time: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`,
       channel: 'Bank'
     }
   });
@@ -150,7 +147,6 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
           {errors.date && <span className="text-error text-xs mt-1">{errors.date.message}</span>}
         </div>
 
-        <input type="hidden" {...register('time')} />
       </div>
 
       <div className="form-control">
