@@ -104,7 +104,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-2 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
         <div className="form-control">
           <label className="label"><span className="label-text text-xs sm:text-sm">Title</span></label>
           <input type="text" className={`input input-bordered input-sm sm:input-md text-sm ${errors.title ? 'input-error' : ''}`} {...register('title')} placeholder={type === 'income' ? 'e.g. Salary' : 'e.g. Bill'} />

@@ -149,7 +149,7 @@ const Income = () => {
                       <div>
                         <h4 className="font-bold text-base">{inc.title}</h4>
                         <div className="text-xs text-base-content/70 mt-1">
-                          {formatDate(inc.date)} • {formatTime(inc.time)}
+                          {formatDate(inc.date)}
                         </div>
                       </div>
                       <span className="text-success font-semibold text-lg">+{formatCurrency(inc.amount, user?.currency)}</span>

@@ -133,7 +133,7 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <p className="font-medium text-sm">{tx.title}</p>
-                    <p className="text-xs text-base-content/60">{formatDate(tx.date)} &middot; {formatTime(tx.time)} &middot; {tx.category} &middot; {tx.channel}</p>
+                    <p className="text-xs text-base-content/60">{formatDate(tx.date)} &middot; {tx.category} &middot; {tx.channel}</p>
                   </div>
                 </div>
                 <div className={`font-semibold ${tx.type === 'income' ? 'text-success' : 'text-error'}`}>

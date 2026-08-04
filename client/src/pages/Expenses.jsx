@@ -149,7 +149,7 @@ const Expenses = () => {
                       <div>
                         <h4 className="font-bold text-base">{exp.title}</h4>
                         <div className="text-xs text-base-content/70 mt-1">
-                          {formatDate(exp.date)} • {formatTime(exp.time)}
+                          {formatDate(exp.date)}
                         </div>
                       </div>
                       <span className="text-error font-semibold text-lg">-{formatCurrency(exp.amount, user?.currency)}</span>
