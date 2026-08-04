@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/authStore';
 import { formatCurrency } from '../lib/currency';
 import api from '../lib/axios';
-import { Landmark, Plus, HeartHandshake, History, Trash2, AlertTriangle } from 'lucide-react';
+import { Landmark, Plus, HeartHandshake, History, Trash2, AlertTriangle, Edit2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -15,6 +15,7 @@ const BankInterest = () => {
   const queryClient = useQueryClient();
   
   const [interestTx, setInterestTx] = useState({ type: null, amount: '', bank: '' });
+  const [editingHistoryTx, setEditingHistoryTx] = useState(null);
 
   const { data: interestData, isLoading: isInterestLoading } = useQuery({
     queryKey: ['interest'],
@@ -61,6 +62,36 @@ const BankInterest = () => {
     if (interestTx.type === 'Add' && !interestTx.bank) return toast.error('Bank name required');
     interestMutation.mutate(interestTx);
   };
+
+  const deleteHistoryTxMutation = useMutation({
+    mutationFn: (txId) => api.delete(`/interest/${txId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['interest']);
+      queryClient.invalidateQueries(['dashboard']);
+      toast.success('Transaction deleted');
+    }
+  });
+
+  const editHistoryTxMutation = useMutation({
+    mutationFn: ({ txId, data }) => api.put(`/interest/${txId}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['interest']);
+      queryClient.invalidateQueries(['dashboard']);
+      toast.success('Transaction updated');
+      setEditingHistoryTx(null);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Update failed');
+    }
+  });
+
+  const handleEditHistoryTx = (e) => {
+    e.preventDefault();
+    if (!editingHistoryTx.amount || editingHistoryTx.amount <= 0) return toast.error('Valid amount required');
+    if (editingHistoryTx.type === 'Add' && !editingHistoryTx.bank) return toast.error('Bank name required');
+    editHistoryTxMutation.mutate({ txId: editingHistoryTx._id, data: { amount: Number(editingHistoryTx.amount), bank: editingHistoryTx.bank, date: editingHistoryTx.date } });
+  };
+
 
   return (
     <div className="space-y-6">
@@ -137,6 +168,34 @@ const BankInterest = () => {
         </motion.div>
       )}
 
+      {editingHistoryTx && (
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-base-100 p-6 rounded-2xl w-full max-w-sm">
+            <h3 className="font-bold text-lg mb-4">Edit Transaction</h3>
+            <form onSubmit={handleEditHistoryTx} className="space-y-4">
+              <div className="form-control">
+                <label className="label"><span className="label-text">Amount</span></label>
+                <input type="number" step="0.01" className="input input-bordered" autoFocus value={editingHistoryTx.amount} onChange={e => setEditingHistoryTx({...editingHistoryTx, amount: e.target.value})} />
+              </div>
+              {editingHistoryTx.type === 'Add' && (
+                <div className="form-control">
+                  <label className="label"><span className="label-text">Bank Name</span></label>
+                  <input type="text" className="input input-bordered" value={editingHistoryTx.bank || ''} onChange={e => setEditingHistoryTx({...editingHistoryTx, bank: e.target.value})} />
+                </div>
+              )}
+              <div className="form-control">
+                <label className="label"><span className="label-text">Date</span></label>
+                <input type="date" className="input input-bordered" value={format(new Date(editingHistoryTx.date), 'yyyy-MM-dd')} onChange={e => setEditingHistoryTx({...editingHistoryTx, date: e.target.value})} />
+              </div>
+              <div className="flex gap-2 justify-end mt-6">
+                <button type="button" className="btn btn-ghost" onClick={() => setEditingHistoryTx(null)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={editHistoryTxMutation.isPending}>Save</button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      )}
+
       <div className="glass-card mt-6 p-0 overflow-hidden flex flex-col border border-error/10">
         <div className="p-6 border-b border-base-200/50 bg-error/10">
           <h3 className="text-lg font-bold flex items-center gap-2 text-error">
@@ -166,8 +225,16 @@ const BankInterest = () => {
                     </span>
                   </div>
                   <div className="flex justify-end items-center mt-2 pt-3 border-t border-error/10">
-                    <div className={`badge badge-sm border-error/40 ${tx.type === 'Add' ? 'text-error' : 'text-success'}`}>
-                      {tx.type === 'Add' ? 'Added' : 'Infaq'}
+                    <div className="flex items-center gap-2">
+                      <div className={`badge badge-sm border-error/40 ${tx.type === 'Add' ? 'text-error' : 'text-success'}`}>
+                        {tx.type === 'Add' ? 'Added' : 'Infaq'}
+                      </div>
+                      <button onClick={() => setEditingHistoryTx(tx)} className="btn btn-ghost btn-xs p-0 px-1 text-base-content/60 hover:text-error">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => { if(window.confirm('Delete this transaction?')) deleteHistoryTxMutation.mutate(tx._id); }} className="btn btn-ghost btn-xs p-0 px-1 text-base-content/60 hover:text-error" disabled={deleteHistoryTxMutation.isPending}>
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 </div>

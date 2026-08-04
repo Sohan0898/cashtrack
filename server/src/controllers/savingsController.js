@@ -143,6 +143,83 @@ export const getAllSavingsHistory = async (req, res) => {
       .populate('savingsAccount', 'accountName type')
       .sort({ date: -1 });
     res.json(history);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update savings transaction
+// @route   PUT /api/savings/transaction/:txId
+// @access  Private
+export const updateSavingsTransaction = async (req, res) => {
+  try {
+    const { amount, date } = req.body;
+    const history = await SavingsHistory.findById(req.params.txId);
+
+    if (history && history.user.toString() === req.user._id.toString()) {
+      const savings = await Savings.findById(history.savingsAccount);
+      if (!savings) {
+        return res.status(404).json({ message: 'Associated savings account not found' });
+      }
+
+      const oldAmount = history.amount;
+      const newAmount = amount !== undefined ? Number(amount) : oldAmount;
+      
+      // Revert old amount
+      if (history.type === 'Deposit') {
+        savings.balance -= oldAmount;
+      } else {
+        savings.balance += oldAmount;
+      }
+
+      // Apply new amount
+      if (history.type === 'Deposit') {
+        savings.balance += newAmount;
+      } else {
+        if (savings.balance < newAmount) {
+          return res.status(400).json({ message: 'Insufficient balance to update this withdrawal' });
+        }
+        savings.balance -= newAmount;
+      }
+
+      history.amount = newAmount;
+      if (date) history.date = date;
+
+      await savings.save();
+      const updatedHistory = await history.save();
+
+      res.json(updatedHistory);
+    } else {
+      res.status(404).json({ message: 'Transaction not found or unauthorized' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete savings transaction
+// @route   DELETE /api/savings/transaction/:txId
+// @access  Private
+export const deleteSavingsTransaction = async (req, res) => {
+  try {
+    const history = await SavingsHistory.findById(req.params.txId);
+
+    if (history && history.user.toString() === req.user._id.toString()) {
+      const savings = await Savings.findById(history.savingsAccount);
+      if (savings) {
+        // Revert balance
+        if (history.type === 'Deposit') {
+          savings.balance -= history.amount;
+        } else {
+          savings.balance += history.amount;
+        }
+        await savings.save();
+      }
+
+      await history.deleteOne();
+      res.json({ message: 'Savings transaction removed' });
+    } else {
+      res.status(404).json({ message: 'Transaction not found or unauthorized' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

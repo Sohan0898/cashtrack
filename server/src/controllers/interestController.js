@@ -89,6 +89,33 @@ export const deleteInterestTransaction = async (req, res) => {
     } else {
       res.status(404).json({ message: 'Interest transaction not found or unauthorized' });
     }
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update an interest transaction
+// @route   PUT /api/interest/:id
+// @access  Private
+export const updateInterestTransaction = async (req, res) => {
+  try {
+    const { amount, bank, date } = req.body;
+    const interest = await BankInterest.findById(req.params.id);
+
+    if (interest && interest.user.toString() === req.user._id.toString()) {
+      interest.amount = amount !== undefined ? Number(amount) : interest.amount;
+      if (interest.type === 'Add') {
+        interest.bank = bank || interest.bank;
+      }
+      if (date) {
+        interest.date = date;
+      }
+      const updatedInterest = await interest.save();
+      res.json(updatedInterest);
+    } else {
+      res.status(404).json({ message: 'Interest transaction not found or unauthorized' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

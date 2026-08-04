@@ -146,7 +146,6 @@ export default function RestoreBackup() {
       
       const data = JSON.parse(savedSnapshot);
       let importedCount = 0;
-      const defaultTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
       if (data.incomes && Array.isArray(data.incomes)) {
         for (const inc of data.incomes) {
@@ -156,7 +155,7 @@ export default function RestoreBackup() {
               amount: Number(inc.amount) || 0,
               category: inc.category || 'Salary',
               date: inc.date || new Date().toISOString(),
-              time: inc.time || defaultTime,
+
               channel: getValidChannel(inc.channel),
               description: inc.description || ''
             });
@@ -175,7 +174,7 @@ export default function RestoreBackup() {
               amount: Number(exp.amount) || 0,
               category: exp.category || 'Other',
               date: exp.date || new Date().toISOString(),
-              time: exp.time || defaultTime,
+
               channel: getValidChannel(exp.channel),
               description: exp.description || ''
             });
@@ -292,8 +291,7 @@ export default function RestoreBackup() {
     reader.onload = async (event) => {
       try {
         const text = event.target.result;
-        let count = 0;
-        const defaultTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        let successCount = 0;
 
         if (file.name.endsWith('.json')) {
           const parsed = JSON.parse(text);

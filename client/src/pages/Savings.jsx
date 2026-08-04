@@ -16,6 +16,7 @@ const Savings = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newAccount, setNewAccount] = useState({ accountName: '', type: 'Bank', goal: '' });
   const [editingAccount, setEditingAccount] = useState(null);
+  const [editingHistoryTx, setEditingHistoryTx] = useState(null);
   
   const [txData, setTxData] = useState({ accountId: null, type: 'Deposit', amount: '' });
 
@@ -80,6 +81,37 @@ const Savings = () => {
       toast.error(err.response?.data?.message || 'Transaction failed');
     }
   });
+
+  const deleteHistoryTxMutation = useMutation({
+    mutationFn: (txId) => api.delete(`/savings/transaction/${txId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['savings']);
+      queryClient.invalidateQueries(['savingsHistoryAll']);
+      queryClient.invalidateQueries(['dashboard']);
+      toast.success('History transaction deleted');
+    }
+  });
+
+  const editHistoryTxMutation = useMutation({
+    mutationFn: ({ txId, data }) => api.put(`/savings/transaction/${txId}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['savings']);
+      queryClient.invalidateQueries(['savingsHistoryAll']);
+      queryClient.invalidateQueries(['dashboard']);
+      toast.success('History transaction updated');
+      setEditingHistoryTx(null);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Update failed');
+    }
+  });
+
+  const handleEditHistoryTx = (e) => {
+    e.preventDefault();
+    if (!editingHistoryTx.amount || editingHistoryTx.amount <= 0) return toast.error('Valid amount required');
+    editHistoryTxMutation.mutate({ txId: editingHistoryTx._id, data: { amount: Number(editingHistoryTx.amount), date: editingHistoryTx.date } });
+  };
+
 
   const handleCreate = (e) => {
     e.preventDefault();
@@ -189,6 +221,28 @@ const Savings = () => {
         </motion.div>
       )}
 
+      {editingHistoryTx && (
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-base-100 p-6 rounded-2xl w-full max-w-sm">
+            <h3 className="font-bold text-lg mb-4">Edit Transaction</h3>
+            <form onSubmit={handleEditHistoryTx} className="space-y-4">
+              <div className="form-control">
+                <label className="label"><span className="label-text">Amount</span></label>
+                <input type="number" step="0.01" className="input input-bordered" autoFocus value={editingHistoryTx.amount} onChange={e => setEditingHistoryTx({...editingHistoryTx, amount: e.target.value})} />
+              </div>
+              <div className="form-control">
+                <label className="label"><span className="label-text">Date</span></label>
+                <input type="date" className="input input-bordered" value={format(new Date(editingHistoryTx.date), 'yyyy-MM-dd')} onChange={e => setEditingHistoryTx({...editingHistoryTx, date: e.target.value})} />
+              </div>
+              <div className="flex gap-2 justify-end mt-6">
+                <button type="button" className="btn btn-ghost" onClick={() => setEditingHistoryTx(null)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={editHistoryTxMutation.isPending}>Save</button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
            <div className="col-span-full flex justify-center py-10"><span className="loading loading-bars text-accent"></span></div>
@@ -263,8 +317,16 @@ const Savings = () => {
                   </div>
                   <div className="flex justify-between items-center mt-3 pt-3 border-t border-accent/10">
                     <span className="text-xs text-base-content/60">{tx.savingsAccount?.type || 'Unknown Type'}</span>
-                    <div className={`badge badge-sm border-accent/40 ${tx.type === 'Deposit' ? 'text-success' : 'text-error'}`}>
-                      {tx.type}
+                    <div className="flex items-center gap-2">
+                      <div className={`badge badge-sm border-accent/40 ${tx.type === 'Deposit' ? 'text-success' : 'text-error'}`}>
+                        {tx.type}
+                      </div>
+                      <button onClick={() => setEditingHistoryTx(tx)} className="btn btn-ghost btn-xs p-0 px-1 text-base-content/60 hover:text-accent">
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => { if(window.confirm('Delete this transaction?')) deleteHistoryTxMutation.mutate(tx._id); }} className="btn btn-ghost btn-xs p-0 px-1 text-base-content/60 hover:text-error" disabled={deleteHistoryTxMutation.isPending}>
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 </div>
