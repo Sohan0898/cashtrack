@@ -1,26 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle, LogOut, Laptop, Bell } from 'lucide-react';
+import { Settings as SettingsIcon, Globe, ShieldAlert, AlertTriangle, LogOut, Laptop } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '../lib/i18n';
 import useAuthStore from '../store/authStore';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -31,8 +16,6 @@ const Settings = () => {
   const [isClearing, setIsClearing] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [loadingSessions, setLoadingSessions] = useState(false);
-  const [notificationPrefs, setNotificationPrefs] = useState({ daily: false, weekly: false, monthly: false });
-  const [isSubscribing, setIsSubscribing] = useState(false);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -46,16 +29,7 @@ const Settings = () => {
         setLoadingSessions(false);
       }
     };
-    const fetchPrefs = async () => {
-      try {
-        const res = await api.get('/notifications/preferences');
-        setNotificationPrefs(res.data.preferences || { daily: false, weekly: false, monthly: false });
-      } catch (err) {
-        console.error('Failed to fetch notification preferences');
-      }
-    };
     fetchSessions();
-    fetchPrefs();
   }, []);
 
   const handleRevokeSession = async (id) => {
@@ -88,66 +62,6 @@ const Settings = () => {
       toast.error('Failed to clear data');
     } finally {
       setIsClearing(false);
-    }
-  };
-
-  const handleTogglePref = async (key) => {
-    const newPrefs = { ...notificationPrefs, [key]: !notificationPrefs[key] };
-    setNotificationPrefs(newPrefs);
-    try {
-      await api.put('/notifications/preferences', { preferences: newPrefs });
-      
-      if (newPrefs[key] && Notification.permission !== 'granted') {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-          subscribeUserToPush();
-        } else {
-          toast.error('Notification permission denied');
-          setNotificationPrefs(notificationPrefs);
-          await api.put('/notifications/preferences', { preferences: notificationPrefs });
-        }
-      } else if (newPrefs[key]) {
-         subscribeUserToPush();
-      }
-    } catch (err) {
-      toast.error('Failed to update preferences');
-    }
-  };
-
-  const subscribeUserToPush = async () => {
-    if (!('serviceWorker' in navigator)) return;
-    
-    const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
-    if (!vapidKey) {
-      toast.error('Push notifications are not configured on the server.');
-      return;
-    }
-
-    try {
-      setIsSubscribing(true);
-      const registration = await navigator.serviceWorker.ready;
-      const subscribeOptions = {
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey)
-      };
-      
-      let subscription = await registration.pushManager.getSubscription();
-      if (!subscription) {
-        subscription = await registration.pushManager.subscribe(subscribeOptions);
-      }
-
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      await api.post('/notifications/subscribe', {
-        subscription,
-        timezone
-      });
-      toast.success('Notifications enabled on this device');
-    } catch (err) {
-      console.error('Failed to subscribe to push', err);
-      toast.error('Failed to enable notifications');
-    } finally {
-      setIsSubscribing(false);
     }
   };
 
@@ -211,40 +125,6 @@ const Settings = () => {
           <button className="btn btn-primary" onClick={handleSave} disabled={isSaving}>
             {isSaving ? <span className="loading loading-bars"></span> : 'Save Changes'}
           </button>
-        </div>
-
-        {/* Notifications */}
-        <div className="mt-8 pt-8 border-t border-base-200">
-          <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
-            <Bell className="w-5 h-5 text-warning" /> Notifications & Reminders
-          </h3>
-          <p className="text-sm text-base-content/70 mb-4">
-            Get automated push notifications directly to this device. For iOS devices, make sure to add this app to your Home Screen to receive notifications.
-          </p>
-          
-          <div className="bg-base-200/50 rounded-xl p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="font-medium block">Daily Reminders</span>
-                <span className="text-xs text-base-content/70">Receive a friendly reminder at 12 PM and 10 PM.</span>
-              </div>
-              <input type="checkbox" className="toggle toggle-primary" checked={notificationPrefs.daily} onChange={() => handleTogglePref('daily')} disabled={isSubscribing} />
-            </div>
-            <div className="flex items-center justify-between border-t border-base-300 pt-4">
-              <div>
-                <span className="font-medium block">Weekly Summary</span>
-                <span className="text-xs text-base-content/70">A quick update every Sunday morning.</span>
-              </div>
-              <input type="checkbox" className="toggle toggle-primary" checked={notificationPrefs.weekly} onChange={() => handleTogglePref('weekly')} disabled={isSubscribing} />
-            </div>
-            <div className="flex items-center justify-between border-t border-base-300 pt-4">
-              <div>
-                <span className="font-medium block">Monthly Summary</span>
-                <span className="text-xs text-base-content/70">A complete recap on the 1st of every month.</span>
-              </div>
-              <input type="checkbox" className="toggle toggle-primary" checked={notificationPrefs.monthly} onChange={() => handleTogglePref('monthly')} disabled={isSubscribing} />
-            </div>
-          </div>
         </div>
 
         {/* Security / Login Info */}
