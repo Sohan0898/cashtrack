@@ -47,6 +47,10 @@ const Income = () => {
     });
   }, [incomes, selectedMonth, selectedYear]);
 
+  const totalIncome = useMemo(() => {
+    return filteredIncomes.reduce((sum, inc) => sum + (Number(inc.amount) || 0), 0);
+  }, [filteredIncomes]);
+
   const formatDate = (d) => {
     const date = new Date(d);
     return `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })}, ${date.getFullYear()}`;
@@ -85,7 +89,12 @@ const Income = () => {
           className="glass-card p-6 lg:col-span-2"
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-            <h3 className="text-lg font-semibold">Income History</h3>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h3 className="text-lg font-semibold">Income History</h3>
+              <div className="px-3 py-1 bg-success/20 border border-success/50 text-success rounded-lg font-semibold text-sm">
+                Total = {formatCurrency(totalIncome, user?.currency)}
+              </div>
+            </div>
             <div className="flex gap-2">
               <select 
                 className="select select-bordered select-sm" 
