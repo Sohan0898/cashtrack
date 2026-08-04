@@ -116,20 +116,20 @@ const BankInterest = () => {
       {interestTx.type && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className={`glass-card p-6 mb-6 border ${interestTx.type === 'Add' ? 'border-error/20 bg-error/5' : 'border-success/20 bg-success/5'}`}>
           <h3 className={`font-semibold mb-4 ${interestTx.type === 'Add' ? 'text-error' : 'text-success'}`}>{interestTx.type === 'Add' ? 'Add New Interest' : 'Withdraw Infaq'}</h3>
-          <form onSubmit={handleInterestTx} className="flex flex-col md:flex-row gap-4 items-end">
-            <div className="form-control w-full md:w-auto">
-              <label className="label"><span className="label-text">Amount</span></label>
-              <input type="number" step="0.01" className={`input input-bordered focus:border-${interestTx.type === 'Add' ? 'error' : 'success'}`} value={interestTx.amount} onChange={e => setInterestTx({...interestTx, amount: e.target.value})} autoFocus />
+          <form onSubmit={handleInterestTx} className="grid grid-cols-2 md:flex md:flex-row gap-2 sm:gap-4 items-end">
+            <div className={`form-control ${interestTx.type === 'Add' ? 'col-span-1' : 'col-span-2'} md:w-auto`}>
+              <label className="label p-1 sm:p-2"><span className="label-text text-xs sm:text-sm">Amount</span></label>
+              <input type="number" step="0.01" className={`input input-bordered input-sm sm:input-md focus:border-${interestTx.type === 'Add' ? 'error' : 'success'}`} value={interestTx.amount} onChange={e => setInterestTx({...interestTx, amount: e.target.value})} autoFocus />
             </div>
             {interestTx.type === 'Add' && (
-              <div className="form-control w-full md:w-auto">
-                <label className="label"><span className="label-text">Bank Name</span></label>
-                <input type="text" className="input input-bordered focus:border-error" value={interestTx.bank} onChange={e => setInterestTx({...interestTx, bank: e.target.value})} placeholder="e.g. City Bank" />
+              <div className="form-control col-span-1 md:w-auto">
+                <label className="label p-1 sm:p-2"><span className="label-text text-xs sm:text-sm">Bank Name</span></label>
+                <input type="text" className="input input-bordered input-sm sm:input-md focus:border-error" value={interestTx.bank} onChange={e => setInterestTx({...interestTx, bank: e.target.value})} placeholder="e.g. City Bank" />
               </div>
             )}
-            <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
-              <button type="button" className="btn btn-ghost" onClick={() => setInterestTx({ type: null, amount: '', bank: '' })}>Cancel</button>
-              <button type="submit" className={`btn border-none ${interestTx.type === 'Add' ? 'bg-error text-error-content hover:bg-error/90' : 'bg-success text-success-content hover:bg-success/90'}`} disabled={interestMutation.isPending}>
+            <div className="flex gap-2 w-full col-span-2 md:w-auto mt-2 md:mt-0">
+              <button type="button" className="btn btn-ghost btn-sm sm:btn-md" onClick={() => setInterestTx({ type: null, amount: '', bank: '' })}>Cancel</button>
+              <button type="submit" className={`btn btn-sm sm:btn-md flex-1 border-none ${interestTx.type === 'Add' ? 'bg-error text-error-content hover:bg-error/90' : 'bg-success text-success-content hover:bg-success/90'}`} disabled={interestMutation.isPending}>
                 {interestMutation.isPending ? <span className="loading loading-bars"></span> : 'Confirm'}
               </button>
             </div>

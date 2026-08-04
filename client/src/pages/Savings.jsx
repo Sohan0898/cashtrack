@@ -116,22 +116,22 @@ const Savings = () => {
       {isAdding && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 mb-6">
           <h3 className="font-semibold mb-4">Create New Account</h3>
-          <form onSubmit={handleCreate} className="flex flex-col md:flex-row gap-4 items-end">
-            <div className="form-control w-full md:w-auto">
-              <label className="label"><span className="label-text">Account Name</span></label>
-              <input type="text" className="input input-bordered" value={newAccount.accountName} onChange={e => setNewAccount({...newAccount, accountName: e.target.value})} placeholder="Emergency Fund" />
+          <form onSubmit={handleCreate} className="grid grid-cols-2 md:flex md:flex-row gap-2 sm:gap-4 items-end">
+            <div className="form-control col-span-1 md:w-auto">
+              <label className="label p-1 sm:p-2"><span className="label-text text-xs sm:text-sm">Account Name</span></label>
+              <input type="text" className="input input-bordered input-sm sm:input-md" value={newAccount.accountName} onChange={e => setNewAccount({...newAccount, accountName: e.target.value})} placeholder="Emergency Fund" />
             </div>
-            <div className="form-control w-full md:w-auto">
-              <label className="label"><span className="label-text">Type</span></label>
-              <select className="select select-bordered" value={newAccount.type} onChange={e => setNewAccount({...newAccount, type: e.target.value})}>
+            <div className="form-control col-span-1 md:w-auto">
+              <label className="label p-1 sm:p-2"><span className="label-text text-xs sm:text-sm">Type</span></label>
+              <select className="select select-bordered select-sm sm:select-md" value={newAccount.type} onChange={e => setNewAccount({...newAccount, type: e.target.value})}>
                 {['Bank', 'Cash', 'Bkash', 'Nagad', 'Card', 'Matir Bank'].map(t => <option key={t}>{t}</option>)}
               </select>
             </div>
-            <div className="form-control w-full md:w-auto">
-              <label className="label"><span className="label-text">Goal Amount (Optional)</span></label>
-              <input type="number" className="input input-bordered" value={newAccount.goal} onChange={e => setNewAccount({...newAccount, goal: e.target.value})} placeholder="0.00" />
+            <div className="form-control col-span-2 md:col-span-1 md:w-auto">
+              <label className="label p-1 sm:p-2"><span className="label-text text-xs sm:text-sm">Goal Amount (Optional)</span></label>
+              <input type="number" className="input input-bordered input-sm sm:input-md" value={newAccount.goal} onChange={e => setNewAccount({...newAccount, goal: e.target.value})} placeholder="0.00" />
             </div>
-            <button type="submit" className="btn btn-primary mt-4 md:mt-0" disabled={createMutation.isPending}>Create</button>
+            <button type="submit" className="btn btn-primary btn-sm sm:btn-md col-span-2 md:col-span-1 md:w-auto mt-2 md:mt-0" disabled={createMutation.isPending}>Create</button>
           </form>
         </motion.div>
       )}
