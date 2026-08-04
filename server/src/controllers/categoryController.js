@@ -36,6 +36,16 @@ export const createCategory = async (req, res) => {
   try {
     const { name, type, icon } = req.body;
 
+    const exists = await Category.findOne({
+      user: req.user._id,
+      name: new RegExp(`^${name}$`, 'i'),
+      type: { $in: ['both', type] }
+    });
+
+    if (exists) {
+      return res.status(400).json({ message: 'Category already exists' });
+    }
+
     const category = new Category({
       name,
       type,
