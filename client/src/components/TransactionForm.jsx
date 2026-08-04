@@ -74,7 +74,7 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
   });
 
   const addCategoryMutation = useMutation({
-    mutationFn: (name) => api.post('/categories', { name, type: 'both', icon: 'Circle' }),
+    mutationFn: (name) => api.post('/categories', { name, type, icon: 'Circle' }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['categories']);
       setValue('category', res.data.name);
@@ -95,11 +95,11 @@ const TransactionForm = ({ type, onSuccess, initialData = null }) => {
 
   const safeDbCategories = Array.isArray(dbCategories) ? dbCategories : [];
   const categories = safeDbCategories
-    .filter(c => c && (c.type === 'both' || c.type === type))
+    .filter(c => c && c.type === type)
     .map(c => c.name);
   const selectedCategory = watch('category');
   
-  const modalCategories = safeDbCategories.filter(c => c && (c.type === 'both' || c.type === type));
+  const modalCategories = safeDbCategories.filter(c => c && c.type === type);
 
   return (
     <>
