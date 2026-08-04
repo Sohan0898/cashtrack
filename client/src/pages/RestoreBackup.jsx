@@ -194,7 +194,7 @@ export default function RestoreBackup() {
     reader.onload = async (event) => {
       try {
         const text = event.target.result;
-        let successCount = 0;
+        let count = 0;
 
         if (file.name.endsWith('.json')) {
           const parsed = JSON.parse(text);
@@ -233,8 +233,7 @@ export default function RestoreBackup() {
                       amount: numAmt,
                       category,
                       channel: getValidChannel(channel),
-                      date: new Date(date).toISOString(),
-                      time: defaultTime
+                      date: new Date(date).toISOString()
                     });
                     count++;
                   } else if (type.toLowerCase() === 'expense') {
@@ -243,8 +242,7 @@ export default function RestoreBackup() {
                       amount: numAmt,
                       category,
                       channel: getValidChannel(channel),
-                      date: new Date(date).toISOString(),
-                      time: defaultTime
+                      date: new Date(date).toISOString()
                     });
                     count++;
                   }
