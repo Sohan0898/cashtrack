@@ -239,6 +239,66 @@ export const backupData = async (req, res) => {
   }
 };
 
+// @desc    Restore user data from backup
+// @route   POST /api/auth/restore
+// @access  Private
+export const restoreData = async (req, res) => {
+  try {
+    const { incomes, expenses, savingsAccounts, savingsHistories, bankInterest, categories } = req.body;
+    const userId = req.user._id;
+
+    // Helper function for bulk upsert
+    const upsertItems = async (Model, items) => {
+      if (!items || !Array.isArray(items)) return 0;
+      
+      let restoredCount = 0;
+      for (const item of items) {
+        // Enforce current user ID
+        item.user = userId;
+        
+        if (item._id) {
+          try {
+            await Model.findOneAndUpdate(
+              { _id: item._id, user: userId }, 
+              { $set: item }, 
+              { upsert: true, new: true, setDefaultsOnInsert: true }
+            );
+            restoredCount++;
+          } catch (err) {
+            // If the _id exists but belongs to someone else, we'll get a duplicate key error (11000).
+            // In that case, strip the _id and create a brand new record for this user.
+            if (err.code === 11000) {
+              delete item._id;
+              await Model.create(item);
+              restoredCount++;
+            } else {
+              console.error('Error restoring item:', err);
+            }
+          }
+        } else {
+          await Model.create(item);
+          restoredCount++;
+        }
+      }
+      return restoredCount;
+    };
+
+    let totalRestored = 0;
+
+    totalRestored += await upsertItems(Income, incomes);
+    totalRestored += await upsertItems(Expense, expenses);
+    totalRestored += await upsertItems(Savings, savingsAccounts);
+    totalRestored += await upsertItems(SavingsHistory, savingsHistories);
+    totalRestored += await upsertItems(BankInterest, bankInterest);
+    totalRestored += await upsertItems(Category, categories);
+
+    res.status(200).json({ message: 'Restore completed successfully', restoredCount: totalRestored });
+  } catch (error) {
+    console.error('Restore Error:', error);
+    res.status(500).json({ message: 'Failed to restore data' });
+  }
+};
+
 // @desc    Delete user account and all associated data
 // @route   DELETE /api/auth/account
 // @access  Private

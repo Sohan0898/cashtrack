@@ -147,124 +147,27 @@ export default function RestoreBackup() {
       const data = JSON.parse(savedSnapshot);
       let importedCount = 0;
 
-      if (data.incomes && Array.isArray(data.incomes)) {
-        for (const inc of data.incomes) {
+      try {
+        const response = await api.post('/auth/restore', data);
+        importedCount = response.data.restoredCount;
+        
+        // Also restore user settings
+        if (data.user) {
           try {
-            await api.post('/income', {
-              title: inc.title || 'Restored Income',
-              amount: Number(inc.amount) || 0,
-              category: inc.category || 'Salary',
-              date: inc.date || new Date().toISOString(),
-
-              channel: getValidChannel(inc.channel),
-              description: inc.description || ''
+            await api.put('/auth/profile', {
+              currency: data.user.currency,
+              language: data.user.language,
+              theme: data.user.theme
             });
             importedCount++;
           } catch (err) {
-            console.error('Failed to restore income item:', err);
+            console.error('Failed to restore user settings:', err);
           }
         }
-      }
-
-      if (data.expenses && Array.isArray(data.expenses)) {
-        for (const exp of data.expenses) {
-          try {
-            await api.post('/expenses', {
-              title: exp.title || 'Restored Expense',
-              amount: Number(exp.amount) || 0,
-              category: exp.category || 'Other',
-              date: exp.date || new Date().toISOString(),
-
-              channel: getValidChannel(exp.channel),
-              description: exp.description || ''
-            });
-            importedCount++;
-          } catch (err) {
-            console.error('Failed to restore expense item:', err);
-          }
-        }
-      }
-
-      if (data.savingsAccounts && Array.isArray(data.savingsAccounts)) {
-        for (const account of data.savingsAccounts) {
-          try {
-            const histories = data.savingsHistories?.filter(h => h.savingsAccount === account._id) || [];
-            let historyNet = 0;
-            histories.forEach(h => {
-              if (h.type === 'Deposit') historyNet += Number(h.amount) || 0;
-              if (h.type === 'Withdraw') historyNet -= Number(h.amount) || 0;
-            });
-            const initialBalance = account.balance - historyNet;
-
-            const res = await api.post('/savings', {
-              accountName: account.accountName || 'Restored Savings',
-              balance: initialBalance > 0 ? initialBalance : 0,
-              goal: account.goal,
-              type: account.type || 'Bank'
-            });
-            importedCount++;
-            
-            for (const history of histories) {
-              try {
-                await api.post(`/savings/${res.data._id}/transaction`, {
-                  type: history.type,
-                  amount: Number(history.amount) || 0,
-                  date: history.date
-                });
-                importedCount++;
-              } catch (err) {
-                console.error('Failed to restore savings history:', err);
-              }
-            }
-          } catch (err) {
-            console.error('Failed to restore savings account:', err);
-          }
-        }
-      }
-
-      if (data.bankInterest && Array.isArray(data.bankInterest)) {
-        for (const interest of data.bankInterest) {
-          try {
-            await api.post('/interest', {
-              date: interest.date || new Date().toISOString(),
-              amount: Number(interest.amount) || 0,
-              bankName: interest.bankName || 'Unknown Bank',
-              type: interest.type || 'Bank Interest'
-            });
-            importedCount++;
-          } catch (err) {
-            console.error('Failed to restore bank interest:', err);
-          }
-        }
-      }
-
-      if (data.categories && Array.isArray(data.categories)) {
-        for (const cat of data.categories) {
-          try {
-            await api.post('/categories', {
-              name: cat.name,
-              type: cat.type,
-              color: cat.color,
-              icon: cat.icon
-            });
-            importedCount++;
-          } catch (err) {
-            console.error('Failed to restore category:', err);
-          }
-        }
-      }
-
-      if (data.user) {
-        try {
-          await api.put('/auth/profile', {
-            currency: data.user.currency,
-            language: data.user.language,
-            theme: data.user.theme
-          });
-          importedCount++;
-        } catch (err) {
-          console.error('Failed to restore user settings:', err);
-        }
+        
+      } catch (err) {
+        console.error('Failed to bulk restore data from cloud:', err);
+        throw err;
       }
 
       if (importedCount > 0) {
@@ -295,119 +198,25 @@ export default function RestoreBackup() {
 
         if (file.name.endsWith('.json')) {
           const parsed = JSON.parse(text);
-          if (parsed.incomes && Array.isArray(parsed.incomes)) {
-            for (const item of parsed.incomes) {
+          try {
+            const response = await api.post('/auth/restore', parsed);
+            count = response.data.restoredCount;
+
+            if (parsed.user) {
               try {
-                await api.post('/income', {
-                  title: item.title || 'Imported Income',
-                  amount: Number(item.amount) || 0,
-                  category: item.category || 'Salary',
-                  date: item.date || new Date().toISOString(),
-                  time: item.time || defaultTime,
-                  channel: getValidChannel(item.channel),
-                  description: item.description || ''
+                await api.put('/auth/profile', {
+                  currency: parsed.user.currency,
+                  language: parsed.user.language,
+                  theme: parsed.user.theme
                 });
                 count++;
               } catch (err) {
-                console.error(err);
+                console.error('Failed to restore user settings:', err);
               }
             }
-          }
-          if (parsed.expenses && Array.isArray(parsed.expenses)) {
-            for (const item of parsed.expenses) {
-              try {
-                await api.post('/expenses', {
-                  title: item.title || 'Imported Expense',
-                  amount: Number(item.amount) || 0,
-                  category: item.category || 'Other',
-                  date: item.date || new Date().toISOString(),
-                  time: item.time || defaultTime,
-                  channel: getValidChannel(item.channel),
-                  description: item.description || ''
-                });
-                count++;
-              } catch (err) {
-                console.error(err);
-              }
-            }
-          }
-          if (parsed.savingsAccounts && Array.isArray(parsed.savingsAccounts)) {
-            for (const account of parsed.savingsAccounts) {
-              try {
-                const histories = parsed.savingsHistories?.filter(h => h.savingsAccount === account._id) || [];
-                let historyNet = 0;
-                histories.forEach(h => {
-                  if (h.type === 'Deposit') historyNet += Number(h.amount) || 0;
-                  if (h.type === 'Withdraw') historyNet -= Number(h.amount) || 0;
-                });
-                const initialBalance = account.balance - historyNet;
-    
-                const res = await api.post('/savings', {
-                  accountName: account.accountName || 'Restored Savings',
-                  balance: initialBalance > 0 ? initialBalance : 0,
-                  goal: account.goal,
-                  type: account.type || 'Bank'
-                });
-                count++;
-                
-                for (const history of histories) {
-                  try {
-                    await api.post(`/savings/${res.data._id}/transaction`, {
-                      type: history.type,
-                      amount: Number(history.amount) || 0,
-                      date: history.date
-                    });
-                    count++;
-                  } catch (err) {
-                    console.error('Failed to restore savings history:', err);
-                  }
-                }
-              } catch (err) {
-                console.error('Failed to restore savings account:', err);
-              }
-            }
-          }
-          if (parsed.bankInterest && Array.isArray(parsed.bankInterest)) {
-            for (const interest of parsed.bankInterest) {
-              try {
-                await api.post('/interest', {
-                  date: interest.date || new Date().toISOString(),
-                  amount: Number(interest.amount) || 0,
-                  bankName: interest.bankName || 'Unknown Bank',
-                  type: interest.type || 'Bank Interest'
-                });
-                count++;
-              } catch (err) {
-                console.error(err);
-              }
-            }
-          }
-          if (parsed.categories && Array.isArray(parsed.categories)) {
-            for (const cat of parsed.categories) {
-              try {
-                await api.post('/categories', {
-                  name: cat.name,
-                  type: cat.type,
-                  color: cat.color,
-                  icon: cat.icon
-                });
-                count++;
-              } catch (err) {
-                console.error(err);
-              }
-            }
-          }
-          if (parsed.user) {
-            try {
-              await api.put('/auth/profile', {
-                currency: parsed.user.currency,
-                language: parsed.user.language,
-                theme: parsed.user.theme
-              });
-              count++;
-            } catch (err) {
-              console.error(err);
-            }
+          } catch (err) {
+            console.error('Bulk restore error:', err);
+            throw err;
           }
         } else if (file.name.endsWith('.csv')) {
           const lines = text.split('\n').filter(l => l.trim().length > 0);
