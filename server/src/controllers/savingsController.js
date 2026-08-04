@@ -143,6 +143,7 @@ export const getAllSavingsHistory = async (req, res) => {
       .populate('savingsAccount', 'accountName type')
       .sort({ date: -1 });
     res.json(history);
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

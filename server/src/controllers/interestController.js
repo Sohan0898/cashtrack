@@ -89,7 +89,6 @@ export const deleteInterestTransaction = async (req, res) => {
     } else {
       res.status(404).json({ message: 'Interest transaction not found or unauthorized' });
     }
-    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
