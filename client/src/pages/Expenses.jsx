@@ -16,6 +16,7 @@ const Expenses = () => {
   const queryClient = useQueryClient();
 
   const currentDate = new Date();
+  const [selectedDay, setSelectedDay] = useState('All');
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
@@ -43,9 +44,11 @@ const Expenses = () => {
     if (!expenses) return [];
     return expenses.filter(exp => {
       const d = new Date(exp.date);
-      return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+      const isMonthMatch = d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+      const isDayMatch = selectedDay === 'All' ? true : d.getDate() === Number(selectedDay);
+      return isMonthMatch && isDayMatch;
     });
-  }, [expenses, selectedMonth, selectedYear]);
+  }, [expenses, selectedMonth, selectedYear, selectedDay]);
 
   const totalExpense = useMemo(() => {
     return filteredExpenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
@@ -96,6 +99,18 @@ const Expenses = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              <select 
+                className="select select-bordered select-sm" 
+                value={selectedDay} 
+                onChange={(e) => setSelectedDay(e.target.value)}
+              >
+                <option value="All">All Days</option>
+                {Array.from({ length: new Date(selectedYear, selectedMonth + 1, 0).getDate() }).map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
               <select 
                 className="select select-bordered select-sm" 
                 value={selectedMonth} 
