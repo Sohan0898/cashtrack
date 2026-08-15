@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
+import Lottie from 'lottie-react';
 import useAuthStore from './store/authStore';
+import loadingAnimation from './assets/loading.json';
 
 // Layout
 import Layout from './components/Layout';
@@ -39,8 +41,10 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b130e]">
-        <div className="w-8 h-8 rounded-full border-[3px] border-transparent border-t-primary border-r-primary animate-spin"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-base-100">
+        <div className="w-24 h-24 sm:w-32 sm:h-32">
+          <Lottie animationData={loadingAnimation} loop={true} />
+        </div>
       </div>
     );
   }
