@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Wallet } from 'lucide-react';
 import useAuthStore from '../store/authStore';
@@ -42,14 +42,16 @@ const Login = () => {
         transition={{ duration: 0.5 }}
         className="glass-card p-10 max-w-md w-full mx-4 text-center"
       >
-        <div className="flex justify-center mb-6">
-          <div className="bg-primary/10 p-4 rounded-full">
-            <img src="/logo-icon.png" alt="Logo" className="w-16 h-16 object-contain" />
+        <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
+          <div className="flex justify-center mb-6">
+            <div className="bg-primary/10 p-4 rounded-full">
+              <img src="/logo-icon.png" alt="Logo" className="w-16 h-16 object-contain" />
+            </div>
           </div>
-        </div>
-        
-        <h1 className="text-3xl font-bold mb-2" style={{ color: '#C0E250' }}>CashTrack</h1>
-        <p className="text-base-content/60 mb-8">Premium Personal Finance Manager</p>
+          
+          <h1 className="text-3xl font-bold mb-2" style={{ color: '#C0E250' }}>CashTrack</h1>
+          <p className="text-base-content/60 mb-8">Premium Personal Finance Manager</p>
+        </Link>
 
         <button 
           onClick={handleGoogleLogin}
