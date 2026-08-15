@@ -1,4 +1,5 @@
 import { Navigate, Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import useAuthStore from '../store/authStore';
 import { ArrowRight, Activity, TrendingUp, DollarSign, Bitcoin, Wallet, Bell, Search, Star, Moon, Sun, User as UserIcon, LogOut, Settings as SettingsIcon, LayoutDashboard, X } from 'lucide-react';
 import { logoutFirebase, signInWithGoogle } from '../lib/firebase';
@@ -12,6 +13,12 @@ export default function Landing() {
   const { t } = useTranslation();
   const { isAuthenticated, user, login, logout, isLoading, theme, setTheme } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content font-sans overflow-hidden relative transition-colors duration-300">
