@@ -27,7 +27,7 @@ import Pricing from './pages/Pricing';
 import About from './pages/About';
 
 function App() {
-  const { theme, checkAuth } = useAuthStore();
+  const { theme, checkAuth, isLoading } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -36,6 +36,14 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0b130e]">
+        <div className="w-8 h-8 rounded-full border-[3px] border-transparent border-t-primary border-r-primary animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
