@@ -5,7 +5,7 @@ import { Home } from 'lucide-react';
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen bg-base-100 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
       {/* Animation Container */}
       <div className="w-full max-w-md md:max-w-lg mb-8">
         <Lottie animationData={notFoundAnimation} loop={true} />
