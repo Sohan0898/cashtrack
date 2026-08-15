@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import Lottie from 'lottie-react';
 import useAuthStore from './store/authStore';
-import loadingAnimation from './assets/loading.json';
+import loadingAnimation from './assets/loading_data.json';
 
 // Layout
 import Layout from './components/Layout';
