@@ -14,12 +14,6 @@ export default function Landing() {
   const { isAuthenticated, user, login, logout, isLoading, theme, setTheme } = useAuthStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, isLoading, navigate]);
-
   return (
     <div className="min-h-screen bg-base-100 text-base-content font-sans overflow-hidden relative transition-colors duration-300">
       {/* Grid Pattern Background */}
