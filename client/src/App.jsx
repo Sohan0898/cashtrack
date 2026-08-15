@@ -21,6 +21,7 @@ import BankInterest from './pages/BankInterest';
 import RestoreBackup from './pages/RestoreBackup';
 import Settings from './pages/Settings';
 import ManageAccount from './pages/ManageAccount';
+import NotFound from './pages/NotFound';
 
 // Public Marketing Pages
 import Features from './pages/Features';
@@ -82,6 +83,9 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/manage-account" element={<ManageAccount />} />
         </Route>
+
+        {/* Catch-all 404 Route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
