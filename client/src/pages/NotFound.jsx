@@ -12,10 +12,10 @@ const NotFound = () => {
       </div>
 
       {/* Error Message Card */}
-      <div className="card bg-base-200 shadow-xl max-w-md text-center">
+      <div className="card bg-white shadow-xl max-w-md text-center">
         <div className="card-body items-center text-center">
-          <h2 className="card-title text-2xl font-bold mb-2">Oops! Page Not Found</h2>
-          <p className="text-base-content/70 mb-6">
+          <h2 className="card-title text-2xl font-bold mb-2 text-gray-900">Oops! Page Not Found</h2>
+          <p className="text-gray-600 mb-6">
             We couldn't find the page you're looking for. It might have been moved, deleted, or perhaps you mistyped the URL.
           </p>
           <div className="card-actions">
